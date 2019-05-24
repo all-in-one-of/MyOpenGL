@@ -46,9 +46,9 @@ GLint Shader::CompileSource(const std::string& Source)
 	GLint success = GetLog(infoLog);
 
 	if (success)
-		std::cout << "COMPILED SHADER SUCCESSFULLY" << std::endl;
+		std::cout << "COMPILED " << GetShaderType() << " SHADER SUCCESSFULLY" << std::endl;
 	else
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION FAILED\n" << std::string(infoLog) << std::endl;
+		std::cout << "ERROR: COMPILATION FAILED: " << GetShaderType() << std::endl << std::string(infoLog) << std::endl;
 
 	return success;
 }
@@ -79,4 +79,12 @@ GLint Shader::GetLog(GLchar* InfoLog)
 		glGetShaderInfoLog(index, LOG_SIZE, NULL, InfoLog);
 
 	return success;
+}
+
+std::string Shader::GetShaderType()
+{
+	if (shaderType == GL_FRAGMENT_SHADER)
+		return "FRAGMENT";
+	else
+		return "VERTEX";
 }

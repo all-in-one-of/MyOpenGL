@@ -6,62 +6,6 @@
 const unsigned int SRC_WIDTH = 800;
 const unsigned int SRC_HEIGHT = 600;
 
-const std::string shadersFolder = "E:/Documents/PostUniversity/OpenGL/MyOpenGL/MyOpenGL/Shaders/Main";
-
-std::string GetShaderSource(std::string File)
-{
-	std::ifstream inFile;
-	inFile.open(shadersFolder + "/" + File);
-	std::string source;
-
-	if (inFile.is_open())
-	{
-		std::stringstream strStream;
-		strStream << inFile.rdbuf();
-		source = strStream.str();
-		//std::cout << std::to_string(vert.is_open()) << std::endl;
-	}
-	
-
-	inFile.close();
-	return source;// .c_str();
-}
-
-
-GLint GetShaderLog(const GLuint& Shader, GLchar* InfoLog)
-{
-#define LOG_SIZE 512
-
-	GLint success;
-	glGetShaderiv(Shader, GL_COMPILE_STATUS, &success);
-
-	if (!success)
-		glGetShaderInfoLog(Shader, LOG_SIZE, NULL, InfoLog);
-
-	return success;
-}
-
-
-GLuint CompileShader(std::string& Source, GLenum ShaderType, const GLboolean& PrintLog = GL_FALSE)
-{
-	const GLchar* source_cstr = Source.c_str();
-	GLuint shader = glCreateShader(ShaderType);			// Create shader and return index
-	glShaderSource(shader, 1, &source_cstr, NULL);		// Pass shader source
-	glCompileShader(shader);							// Compile the shader
-
-	if (PrintLog)
-	{
-		GLchar infoLog[512];
-		GLint success = GetShaderLog(shader, infoLog);
-
-		if (success)
-			std::cout << "COMPILED SHADER SUCCESSFULLY" << std::endl;
-		else
-			std::cout << "ERROR::SHADER::VERTEX::COMPILATION FAILED\n" << std::string(infoLog) << std::endl;
-	}
-
-	return shader; // Return the shader index
-}
 
 // ===================================== EVENTS ============================================
 
@@ -69,30 +13,6 @@ void FramebufferSizeCallback(GLFWwindow* Window, int Width, int Height)
 {
 	// Make sure viewport matches new window dimensions when resized
 	glViewport(0, 0, Width, Height);
-}
-
-void ProcessInput(GLFWwindow* Window)
-{
-	if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close window on escape press
-		glfwSetWindowShouldClose(Window, true);
-
-	else if (glfwGetKey(Window, GLFW_KEY_1) == GLFW_PRESS)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		std::cout << "MODE: LIT" << std::endl;
-	}
-	else if (glfwGetKey(Window, GLFW_KEY_2) == GLFW_PRESS)
-	{
-		glLineWidth(5.0f);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		std::cout << "MODE: WIREFRAME" << std::endl;
-	}
-	else if (glfwGetKey(Window, GLFW_KEY_3) == GLFW_PRESS)
-	{
-		glPointSize(5.0f);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-		std::cout << "MODE: POINTS" << std::endl;
-	}
 }
 
 
@@ -131,8 +51,9 @@ int main()
 
 	// ===================================== SHADERS ============================================
 
+	std::string shadersDir = "E:/Documents/PostUniversity/OpenGL/MyOpenGL/Shaders/Main";
 	ShaderProgram shaderProgram;
-	shaderProgram.CompileShadersFromFolder("E:/Documents/PostUniversity/OpenGL/MyOpenGL/MyOpenGL/Shaders/Main");
+	shaderProgram.CompileShadersFromFolder(shadersDir);
 	shaderProgram.LinkShaders();
 
 
@@ -186,7 +107,35 @@ int main()
 	while( !glfwWindowShouldClose(window) ) // While window is open
 	{
 		// Input
-		ProcessInput(window);
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close window on escape press
+			glfwSetWindowShouldClose(window, true);
+
+		else if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			std::cout << "MODE: LIT" << std::endl;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+		{
+			glLineWidth(5.0f);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			std::cout << "MODE: WIREFRAME" << std::endl;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+		{
+			glPointSize(5.0f);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+			std::cout << "MODE: POINTS" << std::endl;
+		}
+
+		else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+		{
+			std::cout << "SHADERS HOT RECOMPILE" << std::endl;
+			shaderProgram.CompileShadersFromFolder(shadersDir);
+			shaderProgram.LinkShaders();
+		}
+
+
 
 		// Clear screen with colour
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0);

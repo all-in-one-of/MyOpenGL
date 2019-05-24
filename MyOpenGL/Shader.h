@@ -5,8 +5,11 @@
 
 #include <iostream>
 #include <fstream>
-#include <sstream>
+
 #include <string>
+#include <sstream>
+
+
 
 class Shader
 {
@@ -31,5 +34,6 @@ public:
 
 	// Debugging
 	GLint GetLog(GLchar* InfoLog);
+	std::string GetShaderType();
 };
 
