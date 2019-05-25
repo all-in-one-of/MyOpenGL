@@ -13,6 +13,7 @@ public:
 
 	// Constructors & destructors
 	ShaderProgram();
+	ShaderProgram(const std::string& Folder);
 	~ShaderProgram();
 
 
@@ -22,11 +23,15 @@ public:
 	void Bind();
 	void Unbind();
 
-	GLint GetUniformLocation(const GLchar* Name);
+	// Setters
+	void SetBool(const GLchar* Name, GLboolean Value) const;
+	void SetInt(const GLchar* Name, GLint Value) const;
+	void SetFloat(const GLchar* Name, GLfloat Value) const;
 
 
 	// Getters
-	GLint GetIndex();
-	GLboolean IsValid();
+	GLint GetIndex() const;
+	GLboolean IsValid() const;
+	GLint GetUniformLocation(const GLchar* Name) const;
 };
 

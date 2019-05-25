@@ -7,6 +7,11 @@ ShaderProgram::ShaderProgram()
 
 }
 
+ShaderProgram::ShaderProgram(const std::string & Folder)
+{
+	CompileShadersFromFolder(Folder);
+}
+
 
 ShaderProgram::~ShaderProgram()
 {
@@ -61,20 +66,35 @@ void ShaderProgram::Unbind()
 	glUseProgram(-1);
 }
 
-GLint ShaderProgram::GetUniformLocation(const GLchar* Name)
+void ShaderProgram::SetBool(const GLchar* Name, GLboolean Value) const
+{
+	SetInt(Name, Value);
+}
+
+void ShaderProgram::SetInt(const GLchar* Name, GLint Value) const
+{
+	glUniform1i(GetUniformLocation(Name), Value);
+}
+
+void ShaderProgram::SetFloat(const GLchar * Name, GLfloat Value) const
+{
+	glUniform1f(GetUniformLocation(Name), Value);
+}
+
+GLint ShaderProgram::GetIndex() const
+{
+	return GLint();
+}
+
+GLboolean ShaderProgram::IsValid() const
+{
+	return index >= 0;
+}
+
+GLint ShaderProgram::GetUniformLocation(const GLchar* Name) const
 {
 	if (IsValid())
 		return glGetUniformLocation(index, Name);
 	else
 		return -1;
-}
-
-GLint ShaderProgram::GetIndex()
-{
-	return index;
-}
-
-GLboolean ShaderProgram::IsValid()
-{
-	return index >= 0;
 }
