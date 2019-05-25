@@ -61,7 +61,20 @@ void ShaderProgram::Unbind()
 	glUseProgram(-1);
 }
 
+GLint ShaderProgram::GetUniformLocation(const GLchar* Name)
+{
+	if (IsValid())
+		return glGetUniformLocation(index, Name);
+	else
+		return -1;
+}
+
 GLint ShaderProgram::GetIndex()
 {
 	return index;
+}
+
+GLboolean ShaderProgram::IsValid()
+{
+	return index >= 0;
 }

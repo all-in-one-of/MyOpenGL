@@ -22,8 +22,11 @@ public:
 	void Bind();
 	void Unbind();
 
+	GLint GetUniformLocation(const GLchar* Name);
+
 
 	// Getters
 	GLint GetIndex();
+	GLboolean IsValid();
 };
 

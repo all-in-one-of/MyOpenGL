@@ -135,15 +135,19 @@ int main()
 			shaderProgram.LinkShaders();
 		}
 
-
-
 		// Clear screen with colour
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT); // Clear screen
 
 		// ...
 
+		// Bind shader program
+		GLint timeLoc = shaderProgram.GetUniformLocation("ElapsedTime");
 		shaderProgram.Bind();
+		glUniform1f(timeLoc, glfwGetTime());
+
+
+
 		glBindVertexArray(VAO); // Bind VAO
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDrawElements(GL_TRIANGLES, sizeof(vertices) / sizeof(vertices[0]), GL_UNSIGNED_INT, 0);
