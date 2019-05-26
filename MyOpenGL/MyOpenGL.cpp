@@ -63,6 +63,17 @@ int main()
 	shaderProgram.LinkShaders();
 
 
+	// ===================================== TEXTURES ============================================
+
+	Texture tex = Texture("E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/1024x1024 Texel Density Texture 1.png");
+	Texture tex2;
+	tex2.format = Texture::Format::RGBA;
+	tex2.LoadResource("E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/houdini-763d999dfe.png");
+	shaderProgram.Bind();
+	shaderProgram.SetInt("tex", 0);
+	shaderProgram.SetInt("tex2", 1);
+
+
 	// ===================================== VAO & VBO ============================================
 	
 	// EBO
@@ -124,11 +135,6 @@ int main()
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 	// uncomment this call to draw in wireframe polygons.
 
 
-	// ===================================== TEXTURES ============================================
-
-	Texture2D tex = Texture2D("E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/1024x1024 Texel Density Texture 1.png");
-
-
 	// ===================================== MAIN THREAD ============================================
 
 	while( !glfwWindowShouldClose(window) ) // While window is open
@@ -160,6 +166,9 @@ int main()
 			std::cout << "SHADERS HOT RECOMPILE" << std::endl;
 			shaderProgram.CompileShadersFromFolder(shadersDir);
 			shaderProgram.LinkShaders();
+			shaderProgram.Bind();
+			shaderProgram.SetInt("tex", 0);
+			shaderProgram.SetInt("tex2", 1);
 		}
 
 		// Clear screen with colour
@@ -170,9 +179,15 @@ int main()
 
 
 		// Bind shader program
-		shaderProgram.Bind();
 		shaderProgram.SetFloat("ElapsedTime", glfwGetTime());
-		tex.Bind(); // Bind our texture
+		glActiveTexture(GL_TEXTURE0);
+		tex.Bind();
+		glActiveTexture(GL_TEXTURE1);
+		tex2.Bind();
+		//glBindTexture(GL_TEXTURE_2D, 1);
+		//tex.Bind(); // Bind our texture
+		//tex2.Bind();
+		shaderProgram.Bind();
 
 
 		glBindVertexArray(VAO); // Bind VAO

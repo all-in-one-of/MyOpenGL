@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Object.h"
+#include "Texture.h"
 #include "Shader.h"
 
 class ShaderProgram : public Object
@@ -25,6 +25,7 @@ public:
 	void SetInt(const GLchar* Name, GLint Value) const;
 	void SetFloat(const GLchar* Name, GLfloat Value) const;
 	void SetFloat(const GLchar* Name, GLdouble Value) const; // Higher accuracy
+	//void SetTextureSampler(const GLchar* Name, const Texture& Tex) const;
 
 
 	// Getters

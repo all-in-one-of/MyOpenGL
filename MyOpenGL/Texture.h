@@ -60,6 +60,7 @@ public:
 	
 	// Properties
 	GLboolean GenerateMipMaps = GL_TRUE;
+	GLboolean FlipVertical = GL_TRUE;
 	Format format = Format::RGB;
 
 
@@ -79,8 +80,12 @@ public:
 
 
 	// Getters
+	GLboolean IsValid() const;
 	Type GetType() const;
 	WrapMode GetWrapMode() const;
 	Filter GetFilter() const;
+	GLint GetWidth() const;
+	GLint GetHeight() const;
+	GLint GetNumberOfChannels() const;
 
 };

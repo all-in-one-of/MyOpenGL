@@ -41,7 +41,12 @@ Texture::~Texture()
 void Texture::Bind()
 {
 	if (IsValid())
+	{
+		//glActiveTexture(GL_TEXTURE0);
 		glBindTexture(type, index);
+	}
+	else
+		std::cout << "Error: Failed to bind texture object: `" << source << std::endl;
 }
 
 void Texture::Unbind()
@@ -76,6 +81,7 @@ GLint Texture::LoadResource(const GLchar* File)
 
 	if (IsValid()) // If we have valid texture memory allocated first
 	{
+		stbi_set_flip_vertically_on_load(FlipVertical); // Fix flipping
 		unsigned char* data = stbi_load(File, &width, &height, &numOfChannels, 0);
 
 		if (data) // If the data is valid
@@ -86,7 +92,6 @@ GLint Texture::LoadResource(const GLchar* File)
 				glGenerateMipmap(type);
 
 			std::cout << "Texture successfully loaded: '" << File << "'\n";
-
 			success = 1;
 		}
 		else
@@ -95,11 +100,14 @@ GLint Texture::LoadResource(const GLchar* File)
 		stbi_image_free(data); // Free up memory
 	}
 	else
-	{
 		std::cout << "ERROR: Texture object invalid: '" << File << "'\n";
-	}
 
 	return success;
+}
+
+GLboolean Texture::IsValid() const
+{
+	return index >= 1;
 }
 
 Texture::Type Texture::GetType() const
@@ -115,4 +123,19 @@ Texture::WrapMode Texture::GetWrapMode() const
 Texture::Filter Texture::GetFilter() const
 {
 	return filter;
+}
+
+GLint Texture::GetWidth() const
+{
+	return width;
+}
+
+GLint Texture::GetHeight() const
+{
+	return height;
+}
+
+GLint Texture::GetNumberOfChannels() const
+{
+	return numOfChannels;
 }
