@@ -1,7 +1,7 @@
 #version 330 core
 out vec4 FragColour; // Output
-in vec3 VertexColour;
 in vec2 TexCoord;
+in vec3 VertexColour;
 
 in vec3 LocalPosition;
 in vec3 WorldPosition;

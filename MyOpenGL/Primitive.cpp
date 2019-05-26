@@ -2,6 +2,27 @@
 
 
 
+std::vector<GLfloat> Primitive::GetRawVertices() const
+{
+	std::vector<GLfloat> rawVertices;
+
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		Vertex v = vertices[i];
+
+		// Position
+		rawVertices.push_back(v.position.x);
+		rawVertices.push_back(v.position.y);
+		rawVertices.push_back(v.position.z);
+
+		// TexCoords
+		rawVertices.push_back(v.texCoord.x); // U
+		rawVertices.push_back(v.texCoord.y); // V
+	}
+
+	return rawVertices;
+}
+
 Primitive::Primitive()
 {
 }
@@ -14,17 +35,11 @@ Primitive::~Primitive()
 
 void Primitive::Construct()
 {
-	GLfloat vertices[] = {
-		// positions          // texture coords
-		 0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
-		 0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
-		-0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left 
-	};
-	GLuint indices[] = {
-		0, 1, 3, // first triangle
-		1, 2, 3  // second triangle
-	};
+	// Convert vectors to array data
+	std::vector<GLfloat> rawVertices = GetRawVertices(); // Get raw vertex data as list of floats
+	GLfloat* rawVerticesPt = rawVertices.data();		 // Convert list of floats to array (pointer to memory). We don't know the size of this without the vector.
+	GLuint* indicesPt = indices.data();					 // Convert list of uints to array
+
 
 	// Generate vertex attribute array object & buffers
 	glGenVertexArrays(1, &VAO);
@@ -36,19 +51,19 @@ void Primitive::Construct()
 
 	// Bind vertices buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * rawVertices.size(), rawVerticesPt, GL_STATIC_DRAW);
 
 	// Bind indices buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), indicesPt, GL_STATIC_DRAW);
 
 
 	// Attributes
 	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)0); // change me
 	glEnableVertexAttribArray(0);
 	// texture coord attribute
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat))); // change me
 	glEnableVertexAttribArray(1);
 }
 
@@ -70,6 +85,11 @@ void Primitive::Destroy()
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
+}
+
+void Primitive::AddVertex(const Vertex & NewVertex)
+{
+	vertices.push_back(NewVertex);
 }
 
 GLuint Primitive::GetVBO() const

@@ -82,8 +82,20 @@ int main()
 	// ===================================== VAO & VBO ============================================
 	
 	Primitive prim;
+
+	// Geometry
+	prim.AddVertex(Primitive::Vertex({ 0.5f, 0.5f, 0.0f }, { 1.0f, 1.0f })); // Top right
+	prim.AddVertex(Primitive::Vertex({ 0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f })); // Bottom right
+	prim.AddVertex(Primitive::Vertex({ -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f })); // Bottom left
+	prim.AddVertex(Primitive::Vertex({ -0.5f, 0.5f, 0.0f }, { 0.0f, 1.0f })); // Top left
+	prim.indices = {
+		0, 1, 3, // first triangle
+		1, 2, 3  // second triangle
+	};
+
 	prim.Construct();
 	prim.transform = glm::rotate(prim.transform, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
 
 	// EBO
 	/*GLfloat vertices[] = {
@@ -103,6 +115,7 @@ int main()
 		0, 1, 3,   // first triangle
 		1, 2, 3    // second triangle
 	};*/
+	/*
 	GLfloat vertices[] = {
 		// positions          // colors           // texture coords
 		 0.5f,  0.5f, 0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
@@ -156,7 +169,7 @@ int main()
 	// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
 	glBindVertexArray(0);
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 	// uncomment this call to draw in wireframe polygons.
+	*/
 
 
 	// ===================================== MAIN THREAD ============================================
@@ -241,9 +254,9 @@ int main()
 
 	// ===================================== CLEAN-UP ============================================
 
-	glDeleteVertexArrays(1, &VAO);
+	/*glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
+	glDeleteBuffers(1, &EBO);*/
 	prim.Destroy();
 
 	glfwTerminate(); // Clean up GLFW context
