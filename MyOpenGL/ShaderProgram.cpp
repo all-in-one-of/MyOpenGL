@@ -66,25 +66,24 @@ void ShaderProgram::Unbind()
 	glUseProgram(-1);
 }
 
-void ShaderProgram::SetBool(const GLchar* Name, GLboolean Value) const
+void ShaderProgram::SetBool(const GLchar* Name, const GLboolean& Value) const
 {
 	SetInt(Name, Value);
 }
 
-void ShaderProgram::SetInt(const GLchar* Name, GLint Value) const
+void ShaderProgram::SetInt(const GLchar* Name, const GLint& Value) const
 {
 	glUniform1i(GetUniformLocation(Name), Value);
 }
 
-void ShaderProgram::SetFloat(const GLchar * Name, GLfloat Value) const
+void ShaderProgram::SetFloat(const GLchar * Name, const GLfloat& Value) const
 {
 	glUniform1f(GetUniformLocation(Name), Value);
 }
 
-void ShaderProgram::SetFloat(const GLchar * Name, GLdouble Value) const
+void ShaderProgram::SetMatrix4x4(const GLchar * Name, const glm::mat4& Value) const
 {
-	glUniform1f(GetUniformLocation(Name), Value);
-	//glUniform1d(GetUniformLocation(Name), Value);
+	glUniformMatrix4fv(GetUniformLocation(Name), 1, GL_FALSE, glm::value_ptr(Value));
 }
 
 GLint ShaderProgram::GetUniformLocation(const GLchar* Name) const

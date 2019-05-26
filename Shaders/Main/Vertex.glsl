@@ -12,7 +12,8 @@ uniform float ElapsedTime;
 
 void main()
 {
-    gl_Position = vec4(aPos.x, aPos.y + sin(ElapsedTime) * .1, aPos.z, 1.0);
+	gl_Position = Transform * vec4(aPos, 1.0f);
+    //gl_Position = vec4(aPos.x, aPos.y + sin(ElapsedTime) * .1, aPos.z, 1.0);
 	
 	VertexColour = aColour; // Pass through vertex colour
 	TexCoord = aTexCoord;	// Pass through TexCoords

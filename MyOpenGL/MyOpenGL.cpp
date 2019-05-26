@@ -3,12 +3,6 @@
 #include "stb_image.h"  // Image loading library
 
 
-// GLM Mathematics library
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-
 // Our classes
 #include "ShaderProgram.h"
 #include "Texture2D.h"
@@ -184,11 +178,8 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT); // Clear screen
 
-		// ...
 
-
-		// Bind shader program
-		shaderProgram.SetFloat("ElapsedTime", glfwGetTime());
+		// Bind textures
 		glActiveTexture(GL_TEXTURE0);
 		tex.Bind();
 		glActiveTexture(GL_TEXTURE1);
@@ -196,7 +187,18 @@ int main()
 		//glBindTexture(GL_TEXTURE_2D, 1);
 		//tex.Bind(); // Bind our texture
 		//tex2.Bind();
+
+
+		// Bind shader program
 		shaderProgram.Bind();
+		shaderProgram.SetFloat("ElapsedTime", glfwGetTime());
+
+
+		// Create & bind transform
+		glm::mat4 transform = glm::mat4(1.0f); // Create identity matrix
+		transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
+		transform = glm::rotate(transform, (GLfloat)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0f));
+		shaderProgram.SetMatrix4x4("Transform", transform);
 
 
 		glBindVertexArray(VAO); // Bind VAO
