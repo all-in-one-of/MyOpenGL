@@ -1,6 +1,6 @@
 #include "ShaderProgram.h"
 
-
+ShaderProgram* ShaderProgram::current = nullptr;
 
 ShaderProgram::ShaderProgram()
 {
@@ -59,6 +59,7 @@ GLint ShaderProgram::LinkShaders()
 void ShaderProgram::Bind()
 {
 	glUseProgram(ID);
+	current = this;
 }
 
 void ShaderProgram::Unbind()
@@ -86,10 +87,30 @@ void ShaderProgram::SetMatrix4x4(const GLchar * Name, const glm::mat4& Value) co
 	glUniformMatrix4fv(GetUniformLocation(Name), 1, GL_FALSE, glm::value_ptr(Value));
 }
 
+void ShaderProgram::SetModelMatrix(const glm::mat4 & Model) const
+{
+	SetMatrix4x4(MODEL_MATRIX, Model);
+}
+
+void ShaderProgram::SetViewMatrix(const glm::mat4& View) const
+{
+	SetMatrix4x4(VIEW_MATRIX, View);
+}
+
+void ShaderProgram::SetProjectionMatrix(const glm::mat4& Projection) const
+{
+	SetMatrix4x4(PROJECTION_MATRIX, Projection);
+}
+
 GLint ShaderProgram::GetUniformLocation(const GLchar* Name) const
 {
 	if (IsValid())
 		return glGetUniformLocation(ID, Name);
 	else
 		return -1;
+}
+
+ShaderProgram * ShaderProgram::GetCurrent()
+{
+	return current;
 }

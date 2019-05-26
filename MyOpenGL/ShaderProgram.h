@@ -12,8 +12,20 @@
 
 class ShaderProgram : public Object
 {
+private:
+	static ShaderProgram* current;
+
 public:
+
+	// Compiler constants
+	const GLchar* MODEL_MATRIX = "Model";
+	const GLchar* VIEW_MATRIX = "View";
+	const GLchar* PROJECTION_MATRIX = "Projection";
+
+
+	// Shaders
 	Shader vertexShader, fragmentShader;
+
 
 	// Constructors & destructors
 	ShaderProgram();
@@ -27,6 +39,7 @@ public:
 	void Bind();
 	void Unbind();
 
+
 	// Setters
 	void SetBool(const GLchar* Name, const GLboolean& Value) const;
 	void SetInt(const GLchar* Name, const GLint& Value) const;
@@ -35,7 +48,14 @@ public:
 	//void SetTextureSampler(const GLchar* Name, const Texture& Tex) const;
 
 
+	// Matrices
+	void SetModelMatrix(const glm::mat4& Model) const;
+	void SetViewMatrix(const glm::mat4& View) const;
+	void SetProjectionMatrix(const glm::mat4& Projection) const;
+
+
 	// Getters
 	GLint GetUniformLocation(const GLchar* Name) const;
+	static ShaderProgram* GetCurrent();
 };
 

@@ -6,6 +6,7 @@
 // Our classes
 #include "ShaderProgram.h"
 #include "Texture2D.h"
+#include "Primitive.h"
 
 
 //#include <filesystem>
@@ -79,6 +80,10 @@ int main()
 
 	// ===================================== VAO & VBO ============================================
 	
+	Primitive prim;
+	prim.Construct();
+	prim.transform = glm::rotate(prim.transform, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
 	// EBO
 	/*GLfloat vertices[] = {
 		// positions         // colors
@@ -86,20 +91,35 @@ int main()
 		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
 		 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
 	};*/
-	GLfloat vertices[] = {
+	/*GLfloat vertices[] = {
 		// positions          // colors           // texture coords
 		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
 		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
 		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
 		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-	};
+	};*/
 	/*GLuint indices[] = {
 		0, 1, 3,   // first triangle
 		1, 2, 3    // second triangle
 	};*/
+	GLfloat vertices[] = {
+		// positions          // colors           // texture coords
+		 0.5f,  0.5f, 0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+		 0.5f, -0.5f, 0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+		-0.5f, -0.5f, 0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+		-0.5f,  0.5f, 0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f,    // top left
+
+		 0.5f,  0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+		 0.5f, -0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+		-0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+	};
 	GLuint indices[] = {
 		0, 2, 1,
-		3, 0, 2
+		3, 0, 2,
+
+		4, 6, 5,
+		7, 4, 6
 	};
 
 	GLuint VBO, VAO, EBO;
@@ -195,30 +215,20 @@ int main()
 
 
 		// Create & bind transform
-		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
-		
-		model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		view = glm::translate(view, glm::vec3(0.0, 0.0, -3.0f));
-
 		GLfloat aspect = (GLfloat)SRC_WIDTH / (GLfloat)SRC_HEIGHT;
 		projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
 
-		shaderProgram.SetMatrix4x4("Model", model);
+		//shaderProgram.SetMatrix4x4("Model", model);
 		shaderProgram.SetMatrix4x4("View", view);
 		shaderProgram.SetMatrix4x4("Projection", projection);
 
-		/*
-		glm::mat4 transform = glm::mat4(1.0f); // Create identity matrix
-		transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
-		transform = glm::rotate(transform, (GLfloat)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0f));
-		shaderProgram.SetMatrix4x4("Transform", transform);
-		*/
 
-		glBindVertexArray(VAO); // Bind VAO
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		// glBindVertexArray(0); // Unbind
+		//glBindVertexArray(VAO); // Bind VAO
+		//glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
+		prim.Draw();
 
 
 		// Check events to call & swap buffers
@@ -232,6 +242,8 @@ int main()
 
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
+	prim.Destroy();
 
 	glfwTerminate(); // Clean up GLFW context
 	return 0; // Return success code
