@@ -3,17 +3,16 @@
 
 void Texture::Generate()
 {
-	GLuint cachedIndex;
-	glGenTextures(1, &cachedIndex);
-	index = cachedIndex;
+	GLuint cachedID;
+	glGenTextures(1, &cachedID);
+	ID = cachedID;
 
-	std::cout << "Generated texture object: " << index << std::endl;
+	std::cout << "Generated texture object: " << ID << std::endl;
 }
 
 void Texture::Init()
 {
-	Generate(); // Generate the index
-
+	Generate(); // Generate the texture so we can bind the ID
 	Bind(); // First bind so we can set the properties
 
 	SetType(type);
@@ -43,7 +42,7 @@ void Texture::Bind()
 	if (IsValid())
 	{
 		//glActiveTexture(GL_TEXTURE0);
-		glBindTexture(type, index);
+		glBindTexture(type, ID);
 	}
 	else
 		std::cout << "Error: Failed to bind texture object: `" << source << std::endl;
@@ -51,7 +50,7 @@ void Texture::Bind()
 
 void Texture::Unbind()
 {
-	index = -1;
+	ID = -1;
 }
 
 void Texture::SetType(const Texture::Type & TextureType)
@@ -107,7 +106,7 @@ GLint Texture::LoadResource(const GLchar* File)
 
 GLboolean Texture::IsValid() const
 {
-	return index >= 1;
+	return ID >= 1;
 }
 
 Texture::Type Texture::GetType() const

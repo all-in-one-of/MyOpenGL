@@ -6,6 +6,8 @@ layout (location = 2) in vec2 aTexCoord; // Input texture coordinates
 out vec3 VertexColour;
 out vec2 TexCoord;
 
+uniform mat4 Transform;
+
 uniform float ElapsedTime;
 
 void main()

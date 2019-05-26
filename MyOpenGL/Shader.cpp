@@ -38,9 +38,9 @@ Shader::~Shader()
 GLint Shader::CompileSource(const std::string& Source)
 {
 	const GLchar* source_cstr = Source.c_str();
-	index = glCreateShader(shaderType);					// Create shader and return index
-	glShaderSource(index, 1, &source_cstr, NULL);		// Pass shader source
-	glCompileShader(index);								// Compile the shader
+	ID = glCreateShader(shaderType);					// Create shader and return index
+	glShaderSource(ID, 1, &source_cstr, NULL);		// Pass shader source
+	glCompileShader(ID);								// Compile the shader
 
 	GLchar infoLog[512];
 	GLint success = GetLog(infoLog);
@@ -65,10 +65,10 @@ GLint Shader::GetLog(GLchar* InfoLog)
 #define LOG_SIZE 512
 
 	GLint success;
-	glGetShaderiv(index, GL_COMPILE_STATUS, &success);
+	glGetShaderiv(ID, GL_COMPILE_STATUS, &success);
 
 	if (!success)
-		glGetShaderInfoLog(index, LOG_SIZE, NULL, InfoLog);
+		glGetShaderInfoLog(ID, LOG_SIZE, NULL, InfoLog);
 
 	return success;
 }

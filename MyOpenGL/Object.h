@@ -12,14 +12,14 @@
 class Object // Base class for all resources
 {
 protected:
-	GLint index = -1;
+	GLint ID = -1;
 
 public:
 	Object();
 	~Object();
 
 	// Getters
-	GLint GetIndex() const;
+	GLint GetID() const;
 	GLboolean IsValid() const;
 };
 

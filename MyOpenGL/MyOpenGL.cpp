@@ -1,9 +1,18 @@
-#include <glad/glad.h> 
-#include <GLFW/glfw3.h>
-#include "stb_image.h"
+#include <glad/glad.h>  // Hardware-specific loader
+#include <GLFW/glfw3.h> // Window & input handler
+#include "stb_image.h"  // Image loading library
 
+
+// GLM Mathematics library
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+
+// Our classes
 #include "ShaderProgram.h"
 #include "Texture2D.h"
+
 
 //#include <filesystem>
 //namespace FileSystem = std::filesystem;

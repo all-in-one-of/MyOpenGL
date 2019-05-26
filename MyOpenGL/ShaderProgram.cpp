@@ -33,32 +33,32 @@ GLint ShaderProgram::CompileShadersFromFolder(const std::string & Folder)
 GLint ShaderProgram::LinkShaders()
 {
 	// Shader program
-	index = glCreateProgram();
-	glAttachShader(index, vertexShader.GetIndex());
-	glAttachShader(index, fragmentShader.GetIndex());
-	glLinkProgram(index); // Link our shaders to the shader program
+	ID = glCreateProgram();
+	glAttachShader(ID, vertexShader.GetID());
+	glAttachShader(ID, fragmentShader.GetID());
+	glLinkProgram(ID); // Link our shaders to the shader program
 
 	// Shader program debugging
 	GLint success;
 	GLchar infoLog[512];
-	glGetProgramiv(index, GL_LINK_STATUS, &success);
+	glGetProgramiv(ID, GL_LINK_STATUS, &success);
 	if (!success)
 	{
-		glGetProgramInfoLog(index, 512, NULL, infoLog);
+		glGetProgramInfoLog(ID, 512, NULL, infoLog);
 		std::cout << "Error: Shaders failed to link" << infoLog << std::endl;
 	}
 	else
 		std::cout << "Shaders successfully linked" << std::endl;
 
-	glDeleteShader(vertexShader.GetIndex());
-	glDeleteShader(fragmentShader.GetIndex());
+	glDeleteShader(vertexShader.GetID());
+	glDeleteShader(fragmentShader.GetID());
 
 	return success;
 }
 
 void ShaderProgram::Bind()
 {
-	glUseProgram(index);
+	glUseProgram(ID);
 }
 
 void ShaderProgram::Unbind()
@@ -90,7 +90,7 @@ void ShaderProgram::SetFloat(const GLchar * Name, GLdouble Value) const
 GLint ShaderProgram::GetUniformLocation(const GLchar* Name) const
 {
 	if (IsValid())
-		return glGetUniformLocation(index, Name);
+		return glGetUniformLocation(ID, Name);
 	else
 		return -1;
 }

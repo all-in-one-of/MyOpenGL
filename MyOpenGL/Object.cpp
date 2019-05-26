@@ -11,12 +11,12 @@ Object::~Object()
 {
 }
 
-GLint Object::GetIndex() const
+GLint Object::GetID() const
 {
-	return index;
+	return ID;
 }
 
 GLboolean Object::IsValid() const
 {
-	return index >= 0;
+	return ID >= 0;
 }
