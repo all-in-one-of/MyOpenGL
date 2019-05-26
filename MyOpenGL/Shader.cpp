@@ -60,14 +60,6 @@ GLint Shader::CompileFile(const std::string& File)
 	return CompileSource(source);
 }
 
-
-GLint Shader::GetIndex()
-{
-	return index;
-}
-
-
-
 GLint Shader::GetLog(GLchar* InfoLog)
 {
 #define LOG_SIZE 512

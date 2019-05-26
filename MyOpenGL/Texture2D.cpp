@@ -4,14 +4,14 @@
 
 Texture2D::Texture2D()
 {
-	Texture::Texture();
+	Texture::Init();
 }
 
 Texture2D::Texture2D(const GLchar * File)
 {
-	Texture::Texture(File);
+	Texture::Init();
+	Texture::LoadResource(File);
 }
-
 
 Texture2D::~Texture2D()
 {

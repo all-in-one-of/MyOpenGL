@@ -84,16 +84,7 @@ void ShaderProgram::SetFloat(const GLchar * Name, GLfloat Value) const
 void ShaderProgram::SetFloat(const GLchar * Name, GLdouble Value) const
 {
 	glUniform1f(GetUniformLocation(Name), Value);
-}
-
-GLint ShaderProgram::GetIndex() const
-{
-	return GLint();
-}
-
-GLboolean ShaderProgram::IsValid() const
-{
-	return index >= 0;
+	//glUniform1d(GetUniformLocation(Name), Value);
 }
 
 GLint ShaderProgram::GetUniformLocation(const GLchar* Name) const

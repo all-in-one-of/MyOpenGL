@@ -1,13 +1,10 @@
 #pragma once
 
+#include "Object.h"
 #include "Shader.h"
 
-class ShaderProgram
+class ShaderProgram : public Object
 {
-private:
-	GLint index = -1;
-
-
 public:
 	Shader vertexShader, fragmentShader;
 
@@ -31,8 +28,6 @@ public:
 
 
 	// Getters
-	GLint GetIndex() const;
-	GLboolean IsValid() const;
 	GLint GetUniformLocation(const GLchar* Name) const;
 };
 

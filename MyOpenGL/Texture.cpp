@@ -3,7 +3,11 @@
 
 void Texture::Generate()
 {
-	glGenTextures(1, &index);
+	GLuint cachedIndex;
+	glGenTextures(1, &cachedIndex);
+	index = cachedIndex;
+
+	std::cout << "Generated texture object: " << index << std::endl;
 }
 
 void Texture::Init()
@@ -15,8 +19,6 @@ void Texture::Init()
 	SetType(type);
 	SetWrapMode(wrapMode);
 	SetFilter(filter);
-
-	Unbind(); // Prevent unwanted edits to this texture
 }
 
 
@@ -87,24 +89,17 @@ GLint Texture::LoadResource(const GLchar* File)
 
 			success = 1;
 		}
+		else
+			std::cout << "ERROR: Failed to load texture: '" << File << "'\n";
 
 		stbi_image_free(data); // Free up memory
 	}
-
-	if (success != 1) // Error message
-		std::cout << "ERROR: Failed to load texture: ' " << File << "'\n";
+	else
+	{
+		std::cout << "ERROR: Texture object invalid: '" << File << "'\n";
+	}
 
 	return success;
-}
-
-GLint Texture::GetIndex() const
-{
-	return index;
-}
-
-GLboolean Texture::IsValid() const
-{
-	return index >= 0;
 }
 
 Texture::Type Texture::GetType() const

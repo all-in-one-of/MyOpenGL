@@ -1,14 +1,10 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-
-#include <glad/glad.h> 
-#include <GLFW/glfw3.h>
+#include "Object.h"
 
 #include "stb_image.h"
 
-class Texture
+class Texture : public Object
 {
 
 public:
@@ -47,8 +43,8 @@ public:
 	};
 
 protected:
-	GLuint index = -1;
 	void Generate();
+	void Init();
 
 private:
 	// Properties
@@ -56,10 +52,8 @@ private:
 	WrapMode wrapMode = WrapMode::Repeat;
 	Filter filter = Filter::Linear;
 	
-	int width, height, numOfChannels = 0;
+	GLint width, height, numOfChannels = 0;
 	std::string source;
-
-	void Init();
 
 
 public:
@@ -85,8 +79,6 @@ public:
 
 
 	// Getters
-	GLint GetIndex() const;
-	GLboolean IsValid() const;
 	Type GetType() const;
 	WrapMode GetWrapMode() const;
 	Filter GetFilter() const;

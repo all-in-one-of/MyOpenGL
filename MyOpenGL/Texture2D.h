@@ -1,8 +1,7 @@
 #pragma once
 #include "Texture.h"
 
-class Texture2D :
-	public Texture
+class Texture2D : public Texture
 {
 protected:
 	Texture::Type type = Texture::Texture2D;
