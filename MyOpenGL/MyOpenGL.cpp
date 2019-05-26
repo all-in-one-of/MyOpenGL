@@ -1,7 +1,12 @@
 #include <glad/glad.h> 
 #include <GLFW/glfw3.h>
+#include "stb_image.h"
 
 #include "ShaderProgram.h"
+
+#include <filesystem>
+//namespace FileSystem = std::filesystem;
+
 
 const unsigned int SRC_WIDTH = 800;
 const unsigned int SRC_HEIGHT = 600;
@@ -60,18 +65,26 @@ int main()
 	// ===================================== VAO & VBO ============================================
 	
 	// EBO
-	GLfloat vertices[] = {
+	/*GLfloat vertices[] = {
 		// positions         // colors
 		 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
 		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
 		 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
+	};*/
+	GLfloat vertices[] = {
+		// positions          // colors           // texture coords
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
 	};
 	/*GLuint indices[] = {
 		0, 1, 3,   // first triangle
 		1, 2, 3    // second triangle
 	};*/
 	GLuint indices[] = {
-		0, 2, 1
+		0, 2, 1,
+		3, 0, 2
 	};
 
 	GLuint VBO, VAO, EBO;
@@ -90,10 +103,15 @@ int main()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)0);
+	// Position attrib
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)0); // 8 * sizeof(GLfloat) - size in bytes of one vertex
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+	// Colour attrib
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat))); // last param = pointer to byte
 	glEnableVertexAttribArray(1);
+	// TexCoord attrib
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
 
 	// Note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -104,6 +122,34 @@ int main()
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 	// uncomment this call to draw in wireframe polygons.
 
+
+	// ===================================== TEXTURES ============================================
+
+	// Request texture memory from GPU
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	// Set texture wrapping/filtering options
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_REPEAT);
+
+	// Load texture from disk & bind to GPU
+	GLint width, height, nrChannels;
+	const GLchar* file = "E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/1024x1024 Texel Density Texture 1.png";
+	unsigned char *data = stbi_load(file, &width, &height, &nrChannels, 0);
+
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		std::cout << "Texture loaded successfully: '" << file << "'\n";
+	}
+	else
+		std::cout << "ERROR: Failed to load texture '" << file << "'\n";
+
+	stbi_image_free(data); // Release memory
 
 
 	// ===================================== MAIN THREAD ============================================
@@ -145,16 +191,15 @@ int main()
 
 		// ...
 
-		// Bind shader program
-		GLint timeLoc = shaderProgram.GetUniformLocation("ElapsedTime");
-		shaderProgram.Bind();
-		glUniform1f(timeLoc, glfwGetTime());
 
+		// Bind shader program
+		shaderProgram.Bind();
+		shaderProgram.SetFloat("ElapsedTime", glfwGetTime());
+		glBindTexture(GL_TEXTURE_2D, texture);
 
 
 		glBindVertexArray(VAO); // Bind VAO
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
-		glDrawElements(GL_TRIANGLES, sizeof(vertices) / sizeof(vertices[0]), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		// glBindVertexArray(0); // Unbind
 
 
