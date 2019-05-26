@@ -46,9 +46,9 @@ GLint Shader::CompileSource(const std::string& Source)
 	GLint success = GetLog(infoLog);
 
 	if (success)
-		std::cout << "COMPILED " << GetShaderType() << " SHADER SUCCESSFULLY" << std::endl;
+		std::cout << "Shader successfully compiled: " << GetShaderType() << std::endl;
 	else
-		std::cout << "ERROR: COMPILATION FAILED: " << GetShaderType() << std::endl << std::string(infoLog) << std::endl;
+		std::cout << "Error: Shader failed to compile: " << GetShaderType() << "\n" << std::string(infoLog) << std::endl;
 
 	return success;
 }

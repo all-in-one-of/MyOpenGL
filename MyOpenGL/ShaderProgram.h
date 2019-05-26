@@ -27,6 +27,7 @@ public:
 	void SetBool(const GLchar* Name, GLboolean Value) const;
 	void SetInt(const GLchar* Name, GLint Value) const;
 	void SetFloat(const GLchar* Name, GLfloat Value) const;
+	void SetFloat(const GLchar* Name, GLdouble Value) const; // Higher accuracy
 
 
 	// Getters

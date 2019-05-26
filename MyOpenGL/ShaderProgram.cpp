@@ -45,10 +45,10 @@ GLint ShaderProgram::LinkShaders()
 	if (!success)
 	{
 		glGetProgramInfoLog(index, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::LINKER" << infoLog << std::endl;
+		std::cout << "Error: Shaders failed to link" << infoLog << std::endl;
 	}
 	else
-		std::cout << "SHADERS LINKED SUCCESSFULLY" << std::endl;
+		std::cout << "Shaders successfully linked" << std::endl;
 
 	glDeleteShader(vertexShader.GetIndex());
 	glDeleteShader(fragmentShader.GetIndex());
@@ -77,6 +77,11 @@ void ShaderProgram::SetInt(const GLchar* Name, GLint Value) const
 }
 
 void ShaderProgram::SetFloat(const GLchar * Name, GLfloat Value) const
+{
+	glUniform1f(GetUniformLocation(Name), Value);
+}
+
+void ShaderProgram::SetFloat(const GLchar * Name, GLdouble Value) const
 {
 	glUniform1f(GetUniformLocation(Name), Value);
 }

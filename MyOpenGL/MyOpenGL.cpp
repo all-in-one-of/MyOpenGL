@@ -3,8 +3,9 @@
 #include "stb_image.h"
 
 #include "ShaderProgram.h"
+#include "Texture2D.h"
 
-#include <filesystem>
+//#include <filesystem>
 //namespace FileSystem = std::filesystem;
 
 
@@ -125,31 +126,7 @@ int main()
 
 	// ===================================== TEXTURES ============================================
 
-	// Request texture memory from GPU
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	// Set texture wrapping/filtering options
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_REPEAT);
-
-	// Load texture from disk & bind to GPU
-	GLint width, height, nrChannels;
-	const GLchar* file = "E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/1024x1024 Texel Density Texture 1.png";
-	unsigned char *data = stbi_load(file, &width, &height, &nrChannels, 0);
-
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-		std::cout << "Texture loaded successfully: '" << file << "'\n";
-	}
-	else
-		std::cout << "ERROR: Failed to load texture '" << file << "'\n";
-
-	stbi_image_free(data); // Release memory
+	Texture2D tex = Texture2D("E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/1024x1024 Texel Density Texture 1.png");
 
 
 	// ===================================== MAIN THREAD ============================================
@@ -195,7 +172,7 @@ int main()
 		// Bind shader program
 		shaderProgram.Bind();
 		shaderProgram.SetFloat("ElapsedTime", glfwGetTime());
-		glBindTexture(GL_TEXTURE_2D, texture);
+		tex.Bind(); // Bind our texture
 
 
 		glBindVertexArray(VAO); // Bind VAO
