@@ -195,11 +195,26 @@ int main()
 
 
 		// Create & bind transform
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 view = glm::mat4(1.0f);
+		glm::mat4 projection = glm::mat4(1.0f);
+		
+		model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		view = glm::translate(view, glm::vec3(0.0, 0.0, -3.0f));
+
+		GLfloat aspect = (GLfloat)SRC_WIDTH / (GLfloat)SRC_HEIGHT;
+		projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+
+		shaderProgram.SetMatrix4x4("Model", model);
+		shaderProgram.SetMatrix4x4("View", view);
+		shaderProgram.SetMatrix4x4("Projection", projection);
+
+		/*
 		glm::mat4 transform = glm::mat4(1.0f); // Create identity matrix
 		transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
 		transform = glm::rotate(transform, (GLfloat)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0f));
 		shaderProgram.SetMatrix4x4("Transform", transform);
-
+		*/
 
 		glBindVertexArray(VAO); // Bind VAO
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
