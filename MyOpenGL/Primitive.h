@@ -35,12 +35,17 @@ protected:
 	std::vector<GLfloat> GetRawVertices() const;
 
 public:
-
 	// Properties
 	glm::mat4 transform = glm::mat4(1.0f);
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
+	enum DrawMode : GLuint
+	{
+		DrawElements = 0,
+		DrawArrays = 1
+	} drawMode = DrawMode::DrawElements;
 
+	// Constructors & destructors
 	Primitive();
 	~Primitive();
 

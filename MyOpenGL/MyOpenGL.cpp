@@ -84,92 +84,29 @@ int main()
 	Primitive prim;
 
 	// Geometry
-	prim.AddVertex(Primitive::Vertex({ 0.5f, 0.5f, 0.0f }, { 1.0f, 1.0f })); // Top right
-	prim.AddVertex(Primitive::Vertex({ 0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f })); // Bottom right
-	prim.AddVertex(Primitive::Vertex({ -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f })); // Bottom left
-	prim.AddVertex(Primitive::Vertex({ -0.5f, 0.5f, 0.0f }, { 0.0f, 1.0f })); // Top left
+	prim.AddVertex(Primitive::Vertex({  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f })); // Top right
+	prim.AddVertex(Primitive::Vertex({  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f })); // Bottom right
+	prim.AddVertex(Primitive::Vertex({ -0.5f, -0.5f,  0.5f }, { 0.0f, 0.0f })); // Bottom left
+	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f })); // Top left
+
+	prim.AddVertex(Primitive::Vertex({  0.5f,  0.5f, -0.5f }, { 1.0f, 1.0f })); // Top right
+	prim.AddVertex(Primitive::Vertex({  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f })); // Bottom right
+	prim.AddVertex(Primitive::Vertex({ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f })); // Bottom left
+	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f })); // Top left
+
+	prim.AddVertex(Primitive::Vertex({  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f })); // Top right
+	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f })); // Top left
+
 	prim.indices = {
 		0, 1, 3, // first triangle
-		1, 2, 3  // second triangle
+		1, 2, 3,  // second triangle
+
+		4, 5, 7,
+		5, 6, 7,
 	};
 
 	prim.Construct();
 	prim.transform = glm::rotate(prim.transform, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-
-	// EBO
-	/*GLfloat vertices[] = {
-		// positions         // colors
-		 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-		 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
-	};*/
-	/*GLfloat vertices[] = {
-		// positions          // colors           // texture coords
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-	};*/
-	/*GLuint indices[] = {
-		0, 1, 3,   // first triangle
-		1, 2, 3    // second triangle
-	};*/
-	/*
-	GLfloat vertices[] = {
-		// positions          // colors           // texture coords
-		 0.5f,  0.5f, 0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-		 0.5f, -0.5f, 0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-		-0.5f, -0.5f, 0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-		-0.5f,  0.5f, 0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f,    // top left
-
-		 0.5f,  0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-		 0.5f, -0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-		-0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-	};
-	GLuint indices[] = {
-		0, 2, 1,
-		3, 0, 2,
-
-		4, 6, 5,
-		7, 4, 6
-	};
-
-	GLuint VBO, VAO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-	// Bind VAO, then bind and set buffers, then configure attributes
-	glBindVertexArray(VAO);
-
-	// Bind VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	// Bind EBO
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-
-	// Position attrib
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)0); // 8 * sizeof(GLfloat) - size in bytes of one vertex
-	glEnableVertexAttribArray(0);
-	// Colour attrib
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat))); // last param = pointer to byte
-	glEnableVertexAttribArray(1);
-	// TexCoord attrib
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(2);
-
-	// Note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-	// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-	glBindVertexArray(0);
-
-	*/
 
 
 	// ===================================== MAIN THREAD ============================================
@@ -228,20 +165,16 @@ int main()
 		shaderProgram.SetFloat("ElapsedTime", glfwGetTime());
 
 
-		// Create & bind transform
+		// Create & bind transform matrix
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
 		view = glm::translate(view, glm::vec3(0.0, 0.0, -3.0f));
 		GLfloat aspect = (GLfloat)SRC_WIDTH / (GLfloat)SRC_HEIGHT;
 		projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
-
-		//shaderProgram.SetMatrix4x4("Model", model);
 		shaderProgram.SetMatrix4x4("View", view);
 		shaderProgram.SetMatrix4x4("Projection", projection);
 
 
-		//glBindVertexArray(VAO); // Bind VAO
-		//glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
 		prim.Draw();
 
 
@@ -254,9 +187,6 @@ int main()
 
 	// ===================================== CLEAN-UP ============================================
 
-	/*glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);*/
 	prim.Destroy();
 
 	glfwTerminate(); // Clean up GLFW context

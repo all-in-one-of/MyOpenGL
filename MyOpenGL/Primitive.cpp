@@ -44,18 +44,23 @@ void Primitive::Construct()
 	// Generate vertex attribute array object & buffers
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO); // Buffer for vertices
-	glGenBuffers(1, &EBO); // Buffer for indices (element buffer)
-
 	glBindVertexArray(VAO);
 
+	// EBO (indices)
+	if (drawMode == DrawMode::DrawElements)
+	{
+		glGenBuffers(1, &EBO); // Buffer for indices (element buffer)
+
+		// Bind indices buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), indicesPt, GL_STATIC_DRAW);
+	}
+
+	
 
 	// Bind vertices buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * rawVertices.size(), rawVerticesPt, GL_STATIC_DRAW);
-
-	// Bind indices buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), indicesPt, GL_STATIC_DRAW);
 
 
 	// Attributes
@@ -77,7 +82,18 @@ void Primitive::Draw()
 
 	// render container
 	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // Consolidate me for variable size
+	
+	// Allow for drawing without EBO
+	switch (drawMode)
+	{
+	case Primitive::DrawMode::DrawElements:
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0); // Consolidate me for variable size
+		break;
+	default:
+	case Primitive::DrawMode::DrawArrays:
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+		break;
+	}
 }
 
 void Primitive::Destroy()
