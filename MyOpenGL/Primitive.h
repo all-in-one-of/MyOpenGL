@@ -3,6 +3,8 @@
 #include "Object.h"
 #include "ShaderProgram.h"
 
+#include <vector>
+
 
 class Primitive : public Object
 {
@@ -11,6 +13,9 @@ private:
 	glm::vec3 normals[];
 	glm::vec3 colours[];
 	glm::vec2 texCoords[];*/
+
+	//std::vector<GLfloat> vertices;
+	//std::vector<GLuint> indices;
 
 	GLuint VBO, VAO, EBO;
 

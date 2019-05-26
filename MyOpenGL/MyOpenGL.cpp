@@ -48,7 +48,6 @@ int main()
 	glfwMakeContextCurrent(window); // Set context to our new window
 	glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
 
-
 	// ===================================== LOAD IN OPENGL CONTEXT ============================================
 
 	// Initialize GLAD: load all function pointers
@@ -57,6 +56,8 @@ int main()
 		std::cout << "Failed to initialize GLAD" << std::endl; // Error
 		return -1; // Return error code
 	}
+
+	glEnable(GL_DEPTH_TEST);
 
 
 	// ===================================== SHADERS ============================================
@@ -196,7 +197,7 @@ int main()
 
 		// Clear screen with colour
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT); // Clear screen
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear screen & depth buffers with bitwise operation on flags
 
 
 		// Bind textures
