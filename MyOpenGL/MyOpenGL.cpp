@@ -4,10 +4,11 @@
 
 
 // Our classes
+#include "Window.h"
 #include "ShaderProgram.h"
 #include "Texture2D.h"
 #include "Primitive.h"
-#include "Camera.h"
+#include "EditorCamera.h"
 
 
 //#include <filesystem>
@@ -39,15 +40,7 @@ int main()
 
 
 	// GLFW create window
-	GLFWwindow* window = glfwCreateWindow(SRC_WIDTH, SRC_HEIGHT, "MyOpenGL", NULL, NULL);
-	if (window == NULL)
-	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1; // Error
-	}
-	glfwMakeContextCurrent(window); // Set context to our new window
-	glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
+	Window window = Window(SRC_WIDTH, SRC_HEIGHT, "MyOpenGL");
 
 	// ===================================== LOAD IN OPENGL CONTEXT ============================================
 
@@ -82,6 +75,22 @@ int main()
 
 	// ===================================== VAO & VBO ============================================
 	
+	Primitive plane;
+
+	plane.AddVertex(Primitive::Vertex({  0.5f,  0.0f, -0.5f }, { 1.0f, 1.0f })); // Front - Top right
+	plane.AddVertex(Primitive::Vertex({  0.5f, -0.0f,  0.5f }, { 1.0f, 0.0f })); // Front - Bottom right
+	plane.AddVertex(Primitive::Vertex({ -0.5f, -0.0f,  0.5f }, { 0.0f, 0.0f })); // Front - Bottom left
+	plane.AddVertex(Primitive::Vertex({ -0.5f,  0.0f, -0.5f }, { 0.0f, 1.0f })); // Front - Top left
+	plane.indices = {
+		0, 1, 3,
+		1, 2, 3
+	};
+	plane.Construct();
+	plane.transform = glm::scale(plane.transform, glm::vec3(3.0f));
+	plane.transform = glm::translate(plane.transform, glm::vec3(0.0f, -.35f, 0.0f));
+
+
+
 	Primitive prim;
 
 	// Geometry
@@ -149,7 +158,8 @@ int main()
 	Camera camera;
 	camera.SetAspect(SRC_WIDTH, SRC_HEIGHT);
 	camera.fieldOfView = 45.0f;
-	camera.transform = glm::translate(camera.transform, glm::vec3(0.0f, 0.0f, -3.0f));
+	//camera.transform = glm::translate(camera.transform, glm::vec3(0.0f, 0.0f, -3.0f));
+	camera.position = glm::vec3(0.0f, 0.0f, 3.0f);
 
 
 
@@ -157,36 +167,55 @@ int main()
 
 	double elapsedTime = 0.0f, deltaTime = 0.0f;
 
-	while( !glfwWindowShouldClose(window) ) // While window is open
+	while( !glfwWindowShouldClose(window.window) ) // While window is open
 	{
+		// Delta & elapsed time
 		float time = glfwGetTime();
 		deltaTime = time - elapsedTime;
 		elapsedTime = time;
 
 
-		// Input
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close window on escape press
-			glfwSetWindowShouldClose(window, true);
+		// Camera controls
 
-		else if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		float camSpeed = 1.5f;
+		//std::cout << glm::to_string(camera.position) << std::endl;
+
+		if (glfwGetKey(window.window, GLFW_KEY_W) == GLFW_PRESS)
+			camera.position += camera.GetForward() * (float)deltaTime * camSpeed;
+		else if (glfwGetKey(window.window, GLFW_KEY_S) == GLFW_PRESS)
+			camera.position -= camera.GetForward() * (float)deltaTime * camSpeed;
+		if (glfwGetKey(window.window, GLFW_KEY_A) == GLFW_PRESS)
+			camera.position -= camera.GetRight() * (float)deltaTime * camSpeed;
+		else if (glfwGetKey(window.window, GLFW_KEY_D) == GLFW_PRESS)
+			camera.position += camera.GetRight() * (float)deltaTime * camSpeed;
+		if (glfwGetKey(window.window, GLFW_KEY_Q) == GLFW_PRESS)
+			camera.position += camera.GetUp() * (float)deltaTime * camSpeed;
+		else if (glfwGetKey(window.window, GLFW_KEY_E) == GLFW_PRESS)
+			camera.position -= camera.GetUp() * (float)deltaTime * camSpeed;
+
+
+		// Input
+		if (glfwGetKey(window.window, GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close window on escape press
+			glfwSetWindowShouldClose(window.window, true);
+
+		else if (glfwGetKey(window.window, GLFW_KEY_1) == GLFW_PRESS)
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			std::cout << "MODE: LIT" << std::endl;
 		}
-		else if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+		else if (glfwGetKey(window.window, GLFW_KEY_2) == GLFW_PRESS)
 		{
 			glLineWidth(5.0f);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			std::cout << "MODE: WIREFRAME" << std::endl;
 		}
-		else if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+		else if (glfwGetKey(window.window, GLFW_KEY_3) == GLFW_PRESS)
 		{
 			glPointSize(5.0f);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 			std::cout << "MODE: POINTS" << std::endl;
 		}
-
-		else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+		else if (glfwGetKey(window.window, GLFW_KEY_R) == GLFW_PRESS) // HOT RECOMPILE
 		{
 			std::cout << "SHADERS HOT RECOMPILE" << std::endl;
 			shaderProgram.CompileShadersFromFolder(shadersDir);
@@ -215,21 +244,13 @@ int main()
 		shaderProgram.Bind();
 		shaderProgram.SetFloat("ElapsedTime", elapsedTime);
 
-
-		// Create & bind transform matrix
-		/*glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 projection = glm::mat4(1.0f);
-		view = glm::translate(view, glm::vec3(0.0, 0.0, -3.0f));
-		GLfloat aspect = (GLfloat)SRC_WIDTH / (GLfloat)SRC_HEIGHT;
-		projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
-		shaderProgram.SetMatrix4x4("View", view);
-		shaderProgram.SetMatrix4x4("Projection", projection);*/
-
 		camera.Bind();
 
+
+		//Draw meshes
+		plane.Draw();
 		prim.transform = glm::rotate(prim.transform, glm::radians((float)deltaTime * 30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		prim.Draw();
-
 		for (int i = 0; i < positions.size(); i++)
 		{
 			glm::mat4 transform = glm::mat4(1.0f); // Identity
@@ -239,7 +260,7 @@ int main()
 
 
 		// Check events to call & swap buffers
-		glfwSwapBuffers(window); // Swap the colour buffer and show to screen
+		window.SwapBuffers();
 		glfwPollEvents(); // Check if any events (i.e. inputs) have been triggered
 	}
 
