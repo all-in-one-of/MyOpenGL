@@ -17,7 +17,7 @@
 
 const GLuint SRC_WIDTH = 800;
 const GLuint SRC_HEIGHT = 600;
-
+Window window;
 
 // ===================================== EVENTS ============================================
 
@@ -40,7 +40,7 @@ int main()
 
 
 	// GLFW create window
-	Window window = Window(SRC_WIDTH, SRC_HEIGHT, "MyOpenGL");
+	window = Window(SRC_WIDTH, SRC_HEIGHT, "MyOpenGL");
 
 	// ===================================== LOAD IN OPENGL CONTEXT ============================================
 
@@ -159,7 +159,7 @@ int main()
 	camera.SetAspect(SRC_WIDTH, SRC_HEIGHT);
 	camera.fieldOfView = 45.0f;
 	//camera.transform = glm::translate(camera.transform, glm::vec3(0.0f, 0.0f, -3.0f));
-	camera.position = glm::vec3(0.0f, 0.0f, 3.0f);
+	camera.transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
 
 
 
@@ -181,17 +181,17 @@ int main()
 		//std::cout << glm::to_string(camera.position) << std::endl;
 
 		if (glfwGetKey(window.window, GLFW_KEY_W) == GLFW_PRESS)
-			camera.position += camera.GetForward() * (float)deltaTime * camSpeed;
+			camera.transform.position += camera.transform.GetForward() * (float)deltaTime * camSpeed;
 		else if (glfwGetKey(window.window, GLFW_KEY_S) == GLFW_PRESS)
-			camera.position -= camera.GetForward() * (float)deltaTime * camSpeed;
+			camera.transform.position -= camera.transform.GetForward() * (float)deltaTime * camSpeed;
 		if (glfwGetKey(window.window, GLFW_KEY_A) == GLFW_PRESS)
-			camera.position -= camera.GetRight() * (float)deltaTime * camSpeed;
+			camera.transform.position -= camera.transform.GetRight() * (float)deltaTime * camSpeed;
 		else if (glfwGetKey(window.window, GLFW_KEY_D) == GLFW_PRESS)
-			camera.position += camera.GetRight() * (float)deltaTime * camSpeed;
+			camera.transform.position += camera.transform.GetRight() * (float)deltaTime * camSpeed;
 		if (glfwGetKey(window.window, GLFW_KEY_Q) == GLFW_PRESS)
-			camera.position += camera.GetUp() * (float)deltaTime * camSpeed;
+			camera.transform.position += camera.transform.GetUp() * (float)deltaTime * camSpeed;
 		else if (glfwGetKey(window.window, GLFW_KEY_E) == GLFW_PRESS)
-			camera.position -= camera.GetUp() * (float)deltaTime * camSpeed;
+			camera.transform.position -= camera.transform.GetUp() * (float)deltaTime * camSpeed;
 
 
 		// Input

@@ -23,11 +23,11 @@ void Camera::Bind()
 
 void Camera::LookAt(const glm::vec3 & Target)
 {
-	glm::mat4 transform = glm::lookAt(position, Target, worldUp);
+	glm::mat4 trans = glm::lookAt(transform.position, Target, worldUp);
 
 	glm::vec3 skew;
 	glm::vec4 perspective;
-	glm::decompose(transform, scale, rotation, position, skew, perspective);
+	glm::decompose(trans, transform.scale, transform.rotation, transform.position, skew, perspective);
 }
 
 void Camera::SetAspect(const GLuint & Width, const GLuint & Height)
@@ -48,20 +48,6 @@ glm::mat4 Camera::GetViewMatrix() const
 
 	return p * r * glm::mat4(1.0f);*/
 
-	return glm::lookAt(position, position + GetForward(), GetUp());
-}
-
-glm::vec3 Camera::GetForward() const
-{
-	return glm::vec3(0.0f, 0.0f, -1.0f) * rotation;
-}
-
-glm::vec3 Camera::GetUp() const
-{
-	return glm::vec3(0.0f, 1.0f, 0.0f) * rotation;
-}
-
-glm::vec3 Camera::GetRight() const
-{
-	return glm::normalize(glm::cross(GetForward(), GetUp()));
+	//return glm::lookAt(position, position + GetForward(), GetUp());
+	return transform.GetMatrix();
 }
