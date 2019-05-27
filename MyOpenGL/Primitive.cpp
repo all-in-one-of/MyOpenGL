@@ -75,7 +75,7 @@ void Primitive::Construct()
 void Primitive::Draw(const glm::mat4& Transform)
 {
 	ShaderProgram* shaderProgram = ShaderProgram::GetCurrent();
-	if (shaderProgram->IsValid())
+	if (shaderProgram != nullptr && shaderProgram->IsValid())
 	{
 		shaderProgram->SetModelMatrix(Transform);
 	}

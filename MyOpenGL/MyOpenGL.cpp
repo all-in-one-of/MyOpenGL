@@ -7,6 +7,7 @@
 #include "ShaderProgram.h"
 #include "Texture2D.h"
 #include "Primitive.h"
+#include "Camera.h"
 
 
 //#include <filesystem>
@@ -143,6 +144,14 @@ int main()
 	prim.Construct();
 	std::vector<glm::vec3> positions = { glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(2.0f, -1.0f, -.5f), glm::vec3(-2.0f, 1.5f, -2.0f) };
 
+	// ===================================== CAMERA ============================================
+
+	Camera camera;
+	camera.SetAspect(SRC_WIDTH, SRC_HEIGHT);
+	camera.fieldOfView = 45.0f;
+	camera.transform = glm::translate(camera.transform, glm::vec3(0.0f, 0.0f, -3.0f));
+
+
 
 	// ===================================== MAIN THREAD ============================================
 
@@ -208,13 +217,15 @@ int main()
 
 
 		// Create & bind transform matrix
-		glm::mat4 view = glm::mat4(1.0f);
+		/*glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
 		view = glm::translate(view, glm::vec3(0.0, 0.0, -3.0f));
 		GLfloat aspect = (GLfloat)SRC_WIDTH / (GLfloat)SRC_HEIGHT;
 		projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
 		shaderProgram.SetMatrix4x4("View", view);
-		shaderProgram.SetMatrix4x4("Projection", projection);
+		shaderProgram.SetMatrix4x4("Projection", projection);*/
+
+		camera.Bind();
 
 		prim.transform = glm::rotate(prim.transform, glm::radians((float)deltaTime * 30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		prim.Draw();

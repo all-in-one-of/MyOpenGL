@@ -122,6 +122,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="resource.h" />
@@ -135,6 +136,7 @@
     <ResourceCompile Include="MyOpenGL.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="MyOpenGL.cpp" />
     <ClCompile Include="Object.cpp" />
