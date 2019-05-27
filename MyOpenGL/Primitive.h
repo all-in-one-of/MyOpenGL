@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Transform.h"
 #include "Object.h"
 #include "ShaderProgram.h"
 
@@ -36,7 +37,8 @@ protected:
 
 public:
 	// Properties
-	glm::mat4 transform = glm::mat4(1.0f);
+	//glm::mat4 transform = glm::mat4(1.0f);
+	Transform transform;
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
 	enum DrawMode : GLuint

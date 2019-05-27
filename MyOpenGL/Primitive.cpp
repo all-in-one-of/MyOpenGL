@@ -56,7 +56,6 @@ void Primitive::Construct()
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), indicesPt, GL_STATIC_DRAW);
 	}
 
-	
 
 	// Bind vertices buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -98,7 +97,7 @@ void Primitive::Draw(const glm::mat4& Transform)
 
 void Primitive::Draw()
 {
-	Draw(transform);
+	Draw(transform.GetMatrix());
 }
 
 void Primitive::Destroy()

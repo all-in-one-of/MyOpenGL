@@ -86,8 +86,9 @@ int main()
 		1, 2, 3
 	};
 	plane.Construct();
-	plane.transform = glm::scale(plane.transform, glm::vec3(3.0f));
-	plane.transform = glm::translate(plane.transform, glm::vec3(0.0f, -.35f, 0.0f));
+	//plane.transform.scale = glm::vec3(3.0f);
+	//plane.transform.position = glm::vec3(0.0f, -.35f, 0.0f);
+	
 
 
 
@@ -176,9 +177,9 @@ int main()
 
 
 		// Camera controls
-
 		float camSpeed = 1.5f;
-		//std::cout << glm::to_string(camera.position) << std::endl;
+		camSpeed = glfwGetKey(window.window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? camSpeed * 2.5f : camSpeed;
+		//std::cout << glm::to_string(camera.transform.position) << std::endl;
 
 		if (glfwGetKey(window.window, GLFW_KEY_W) == GLFW_PRESS)
 			camera.transform.position += camera.transform.GetForward() * (float)deltaTime * camSpeed;
@@ -249,13 +250,14 @@ int main()
 
 		//Draw meshes
 		plane.Draw();
-		prim.transform = glm::rotate(prim.transform, glm::radians((float)deltaTime * 30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		//prim.transform = glm::rotate(prim.transform, glm::radians((float)deltaTime * 30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		//prim.transform.rotation *= glm::quat(0.0f, 1.0f, 0.0f, cos((float)deltaTime * 30.0f));
 		prim.Draw();
 		for (int i = 0; i < positions.size(); i++)
 		{
 			glm::mat4 transform = glm::mat4(1.0f); // Identity
 			transform = glm::translate(transform, positions[i]);
-			prim.Draw(prim.transform * transform);
+			prim.Draw(prim.transform.GetMatrix() * transform);
 		}
 
 
