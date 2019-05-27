@@ -13,8 +13,8 @@
 //namespace FileSystem = std::filesystem;
 
 
-const unsigned int SRC_WIDTH = 800;
-const unsigned int SRC_HEIGHT = 600;
+const GLuint SRC_WIDTH = 800;
+const GLuint SRC_HEIGHT = 600;
 
 
 // ===================================== EVENTS ============================================
@@ -84,18 +84,41 @@ int main()
 	Primitive prim;
 
 	// Geometry
-	prim.AddVertex(Primitive::Vertex({  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f })); // Top right
-	prim.AddVertex(Primitive::Vertex({  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f })); // Bottom right
-	prim.AddVertex(Primitive::Vertex({ -0.5f, -0.5f,  0.5f }, { 0.0f, 0.0f })); // Bottom left
-	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f })); // Top left
+	// Front face
+	prim.AddVertex(Primitive::Vertex({  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f })); // Front - Top right
+	prim.AddVertex(Primitive::Vertex({  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f })); // Front - Bottom right
+	prim.AddVertex(Primitive::Vertex({ -0.5f, -0.5f,  0.5f }, { 0.0f, 0.0f })); // Front - Bottom left
+	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f })); // Front - Top left
 
-	prim.AddVertex(Primitive::Vertex({  0.5f,  0.5f, -0.5f }, { 1.0f, 1.0f })); // Top right
-	prim.AddVertex(Primitive::Vertex({  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f })); // Bottom right
-	prim.AddVertex(Primitive::Vertex({ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f })); // Bottom left
-	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f })); // Top left
+	// Back face
+	prim.AddVertex(Primitive::Vertex({  0.5f,  0.5f, -0.5f }, { 1.0f, 1.0f })); // Back  - Top right
+	prim.AddVertex(Primitive::Vertex({  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f })); // Back  - Bottom right
+	prim.AddVertex(Primitive::Vertex({ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f })); // Back  - Bottom left
+	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f })); // Back -  Top left
 
-	prim.AddVertex(Primitive::Vertex({  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f })); // Top right
-	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f })); // Top left
+	// Top face
+	prim.AddVertex(Primitive::Vertex({  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f })); // Front - Top right
+	prim.AddVertex(Primitive::Vertex({  0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f })); // Back  - Top right
+	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 0.0f })); // Back  - Top left
+	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f })); // Front - Top left
+
+	// Bottom face
+	prim.AddVertex(Primitive::Vertex({ 0.5f,   -0.5f,  0.5f }, { 1.0f, 1.0f })); // Front - Top right
+	prim.AddVertex(Primitive::Vertex({ 0.5f,   -0.5f, -0.5f }, { 1.0f, 0.0f })); // Back  - Top right
+	prim.AddVertex(Primitive::Vertex({ -0.5f,  -0.5f, -0.5f }, { 0.0f, 0.0f })); // Back  - Top left
+	prim.AddVertex(Primitive::Vertex({ -0.5f,  -0.5f,  0.5f }, { 0.0f, 1.0f })); // Front - Top left
+
+	// Left face
+	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f })); // Front - Top left
+	prim.AddVertex(Primitive::Vertex({ -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f })); // Front - Bottom left
+	prim.AddVertex(Primitive::Vertex({ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f })); // Back  - Bottom left
+	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f })); // Back -  Top left
+
+	// Right face
+	prim.AddVertex(Primitive::Vertex({ 0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f })); // Front - Top left
+	prim.AddVertex(Primitive::Vertex({ 0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f })); // Front - Bottom left
+	prim.AddVertex(Primitive::Vertex({ 0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f })); // Back  - Bottom left
+	prim.AddVertex(Primitive::Vertex({ 0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f })); // Back -  Top left
 
 	prim.indices = {
 		0, 1, 3, // first triangle
@@ -103,16 +126,35 @@ int main()
 
 		4, 5, 7,
 		5, 6, 7,
+
+		8, 9, 11,
+		9, 10, 11,
+
+		12, 13, 15,
+		13, 14, 15,
+
+		16, 17, 19,
+		17, 18, 19,
+
+		20, 21, 23,
+		21, 22, 23
 	};
 
 	prim.Construct();
-	prim.transform = glm::rotate(prim.transform, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	//prim.transform = glm::rotate(prim.transform, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 
 	// ===================================== MAIN THREAD ============================================
 
+	double elapsedTime = 0.0f, deltaTime = 0.0f;
+
 	while( !glfwWindowShouldClose(window) ) // While window is open
 	{
+		float time = glfwGetTime();
+		deltaTime = time - elapsedTime;
+		elapsedTime = time;
+
+
 		// Input
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close window on escape press
 			glfwSetWindowShouldClose(window, true);
@@ -162,7 +204,7 @@ int main()
 
 		// Bind shader program
 		shaderProgram.Bind();
-		shaderProgram.SetFloat("ElapsedTime", glfwGetTime());
+		shaderProgram.SetFloat("ElapsedTime", elapsedTime);
 
 
 		// Create & bind transform matrix
@@ -174,7 +216,7 @@ int main()
 		shaderProgram.SetMatrix4x4("View", view);
 		shaderProgram.SetMatrix4x4("Projection", projection);
 
-
+		prim.transform = glm::rotate(prim.transform, glm::radians((float)deltaTime * 30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		prim.Draw();
 
 
