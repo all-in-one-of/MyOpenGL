@@ -141,7 +141,7 @@ int main()
 	};
 
 	prim.Construct();
-	//prim.transform = glm::rotate(prim.transform, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	std::vector<glm::vec3> positions = { glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(2.0f, -1.0f, -.5f), glm::vec3(-2.0f, 1.5f, -2.0f) };
 
 
 	// ===================================== MAIN THREAD ============================================
@@ -218,6 +218,13 @@ int main()
 
 		prim.transform = glm::rotate(prim.transform, glm::radians((float)deltaTime * 30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		prim.Draw();
+
+		for (int i = 0; i < positions.size(); i++)
+		{
+			glm::mat4 transform = glm::mat4(1.0f); // Identity
+			transform = glm::translate(transform, positions[i]);
+			prim.Draw(prim.transform * transform);
+		}
 
 
 		// Check events to call & swap buffers

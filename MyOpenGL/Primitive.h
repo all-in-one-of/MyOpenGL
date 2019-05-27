@@ -52,6 +52,7 @@ public:
 
 	// Methods
 	void Construct();
+	void Draw(const glm::mat4& Transform);
 	void Draw();
 	void Destroy();
 

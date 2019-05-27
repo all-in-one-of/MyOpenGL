@@ -72,12 +72,12 @@ void Primitive::Construct()
 	glEnableVertexAttribArray(1);
 }
 
-void Primitive::Draw()
+void Primitive::Draw(const glm::mat4& Transform)
 {
 	ShaderProgram* shaderProgram = ShaderProgram::GetCurrent();
 	if (shaderProgram->IsValid())
 	{
-		shaderProgram->SetModelMatrix(transform);
+		shaderProgram->SetModelMatrix(Transform);
 	}
 
 	// render container
@@ -94,6 +94,11 @@ void Primitive::Draw()
 		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 		break;
 	}
+}
+
+void Primitive::Draw()
+{
+	Draw(transform);
 }
 
 void Primitive::Destroy()
