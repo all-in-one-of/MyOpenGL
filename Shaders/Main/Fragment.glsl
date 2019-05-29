@@ -26,6 +26,13 @@ vec3 PixelNormal = VertexNormal;
 vec3 ViewDirection = -normalize(CameraPosition - WorldPosition);
 
 
+struct DirectionalLight
+{
+	vec3 Direction;
+	vec3 Colour;
+};
+
+
 struct Material
 {
 	vec3 Albedo;
@@ -33,20 +40,20 @@ struct Material
 } material;
 
 
-vec4 DirectionalLight(vec3 Direction, vec3 Colour)
+vec4 CalcLight(DirectionalLight Light)
 {
 	// Vectors
-	Direction = normalize(Direction);
+	vec3 L = normalize(Light.Direction);
 	vec3 N = normalize(PixelNormal);
 	vec3 V = normalize(ViewDirection);
 	
 	// Blinn
-	float NoV = max( dot(N, -Direction), 0.0f );
-	vec3 diffuse = vec3(NoV) * Colour * material.Albedo;
+	float NoV = max( dot(N, -L), 0.0f );
+	vec3 diffuse = vec3(NoV) * Light.Colour * material.Albedo;
 	
 	// Phong
-	vec3 reflectDir = reflect(-Direction, N);
-	vec3 spec = pow( max(dot(V, reflectDir), 0.0f), 128.0f) * Colour * 0.5f;
+	vec3 reflectDir = reflect(-L, N);
+	vec3 spec = pow( max(dot(V, reflectDir), 0.0f), 128.0f) * Light.Colour * 0.5f;
 	
 	return vec4(diffuse + spec, 1.0f);
 }
@@ -62,7 +69,9 @@ void main()
 	
 	material.Ambient = vec3(.05f);
 	
-	vec3 LightDir = normalize(vec3(-.333f, -.3333f, -.333f));
+	DirectionalLight dirLight;
+	dirLight.Colour = vec3(1.0f);
+	dirLight.Direction = normalize(vec3(-.333f, -.3333f, -.333f));
 	float angle = ElapsedTime * .5f;
 	float cosAngle = cos(angle);
 	float sinAngle = sin(angle);
@@ -72,8 +81,8 @@ void main()
 		-sinAngle, 0.0f, cosAngle, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f
 	);
-	LightDir = vec3(rot * vec4(LightDir, 1.0f));
-	FragColour = DirectionalLight(LightDir, vec3(1.0f));
+	dirLight.Direction = vec3(rot * vec4(dirLight.Direction, 1.0f));
+	FragColour = CalcLight(dirLight);
 	
 	FragColour += vec4(material.Ambient * material.Albedo, 1.0f);
 	
