@@ -25,14 +25,24 @@ void Camera::LookAt(const glm::vec3 & Target)
 {
 	glm::mat4 trans = glm::lookAt(transform.position, Target, worldUp);
 
+	glm::vec3 s;
+	glm::quat r;
+	glm::vec3 p;
 	glm::vec3 skew;
 	glm::vec4 perspective;
-	glm::decompose(trans, transform.scale, transform.rotation, transform.position, skew, perspective);
+	glm::decompose(trans, s, r, p, skew, perspective);
+
+	transform.rotation = r;
 }
 
 void Camera::SetAspect(const GLuint & Width, const GLuint & Height)
 {
 	aspect = (GLfloat)Width / (GLfloat)Height;
+}
+
+glm::vec3 Camera::GetForward() const
+{
+	return -transform.GetForward();
 }
 
 glm::mat4 Camera::GetProjectionMatrix() const
@@ -42,12 +52,5 @@ glm::mat4 Camera::GetProjectionMatrix() const
 
 glm::mat4 Camera::GetViewMatrix() const
 {
-	/*glm::mat4 r = glm::toMat4(rotation);
-	glm::mat4 p = glm::translate(glm::mat4(1.0f), position);
-	glm::mat4 s = glm::scale(glm::mat4(1.0f), scale);
-
-	return p * r * glm::mat4(1.0f);*/
-
-	//return glm::lookAt(position, position + GetForward(), GetUp());
-	return transform.GetMatrix();
+	return glm::lookAt(transform.position, transform.position - transform.GetForward(), transform.GetUp()); // Always face opposite direction of forward vec
 }

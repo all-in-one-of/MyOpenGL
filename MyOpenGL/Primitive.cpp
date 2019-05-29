@@ -76,6 +76,10 @@ void Primitive::Draw(const glm::mat4& Transform)
 	ShaderProgram* shaderProgram = ShaderProgram::GetCurrent();
 	if (shaderProgram != nullptr && shaderProgram->IsValid())
 	{
+		glm::mat4 trans = glm::mat4(1.0f);
+		trans = glm::toMat4(transform.rotation) * trans;
+		trans = glm::translate(trans, transform.position);
+		trans = glm::scale(trans, transform.scale);
 		shaderProgram->SetModelMatrix(Transform);
 	}
 

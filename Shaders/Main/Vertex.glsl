@@ -36,7 +36,7 @@ void main()
 		0.0f, 0.0f, 0.0f, 1.0f
 	);*/
 	
-	mat4 NewModel = Model;// * rot;
+	mat4 NewModel = Model * rot;
 	mat4 Transform = Projection * View * NewModel;
 	
 	LocalPosition = aPos;
@@ -46,7 +46,8 @@ void main()
 	TexCoord = aTexCoord;	// Pass through TexCoords
 	
 
-	gl_Position = Transform * vec4(aPos, 1.0f);
+	gl_Position = Projection * View * NewModel * vec4(aPos, 1.0f);
+	gl_Position.y += abs(sin(ElapsedTime)) * 0.5f;
 	//gl_Position.y += sin(ElapsedTime);
     //gl_Position = vec4(aPos.x, aPos.y + sin(ElapsedTime) * .1, aPos.z, 1.0);
 }

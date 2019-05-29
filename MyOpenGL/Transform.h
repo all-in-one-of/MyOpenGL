@@ -30,5 +30,6 @@ public:
 	glm::vec3 GetUp() const;
 	glm::vec3 GetRight() const;
 	glm::mat4 GetMatrix() const;
+	glm::mat4 GetMatrixWithoutScale() const;
 };
 

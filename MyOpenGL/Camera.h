@@ -28,6 +28,7 @@ public:
 
 
 	// Getters
+	glm::vec3 GetForward() const;
 	glm::mat4 GetProjectionMatrix() const;
 	glm::mat4 GetViewMatrix() const;
 };

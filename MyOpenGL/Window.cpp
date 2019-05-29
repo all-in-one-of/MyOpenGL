@@ -41,3 +41,10 @@ void Window::SwapBuffers()
 {
 	glfwSwapBuffers(window); // Swap the colour buffer and show to screen
 }
+
+glm::ivec2 Window::GetSize() const
+{
+	GLint width, height;
+	glfwGetWindowSize(window, &width, &height);
+	return glm::ivec2(width, height);
+}

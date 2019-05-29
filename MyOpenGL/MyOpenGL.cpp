@@ -18,6 +18,7 @@
 const GLuint SRC_WIDTH = 800;
 const GLuint SRC_HEIGHT = 600;
 Window window;
+Camera camera;
 
 // ===================================== EVENTS ============================================
 
@@ -86,10 +87,8 @@ int main()
 		1, 2, 3
 	};
 	plane.Construct();
-	//plane.transform.scale = glm::vec3(3.0f);
-	//plane.transform.position = glm::vec3(0.0f, -.35f, 0.0f);
-	
-
+	plane.transform.scale = glm::vec3(3.0f);
+	plane.transform.position = glm::vec3(0.0f, -.35f, 0.0f);
 
 
 	Primitive prim;
@@ -156,11 +155,11 @@ int main()
 
 	// ===================================== CAMERA ============================================
 
-	Camera camera;
 	camera.SetAspect(SRC_WIDTH, SRC_HEIGHT);
 	camera.fieldOfView = 45.0f;
-	//camera.transform = glm::translate(camera.transform, glm::vec3(0.0f, 0.0f, -3.0f));
 	camera.transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
+	//camera.transform.rotation = glm::quat(glm::vec3(0.0f, glm::radians(180.0f), 0.0));
+	std::cout << glm::to_string(plane.transform.GetRight()) << std::endl;
 
 
 
@@ -182,17 +181,28 @@ int main()
 		//std::cout << glm::to_string(camera.transform.position) << std::endl;
 
 		if (glfwGetKey(window.window, GLFW_KEY_W) == GLFW_PRESS)
-			camera.transform.position += camera.transform.GetForward() * (float)deltaTime * camSpeed;
+			camera.transform.position += camera.GetForward() * (float)deltaTime * camSpeed;
 		else if (glfwGetKey(window.window, GLFW_KEY_S) == GLFW_PRESS)
-			camera.transform.position -= camera.transform.GetForward() * (float)deltaTime * camSpeed;
+			camera.transform.position -= camera.GetForward() *(float)deltaTime * camSpeed;
 		if (glfwGetKey(window.window, GLFW_KEY_A) == GLFW_PRESS)
 			camera.transform.position -= camera.transform.GetRight() * (float)deltaTime * camSpeed;
 		else if (glfwGetKey(window.window, GLFW_KEY_D) == GLFW_PRESS)
 			camera.transform.position += camera.transform.GetRight() * (float)deltaTime * camSpeed;
 		if (glfwGetKey(window.window, GLFW_KEY_Q) == GLFW_PRESS)
-			camera.transform.position += camera.transform.GetUp() * (float)deltaTime * camSpeed;
+			camera.transform.position += Transform::WORLD_UP * (float)deltaTime * camSpeed;
 		else if (glfwGetKey(window.window, GLFW_KEY_E) == GLFW_PRESS)
-			camera.transform.position -= camera.transform.GetUp() * (float)deltaTime * camSpeed;
+			camera.transform.position -= Transform::WORLD_UP * (float)deltaTime * camSpeed;
+
+		if (glfwGetKey(window.window, GLFW_KEY_0) == GLFW_PRESS)
+			//plane.transform.scale += glm::vec3(deltaTime * 1.5f);
+			prim.transform.position += plane.transform.GetUp() * (float)deltaTime * 1.5f;
+		else if (glfwGetKey(window.window, GLFW_KEY_9) == GLFW_PRESS)
+			//plane.transform.scale -= glm::vec3(deltaTime * 1.5f);
+			prim.transform.position -= plane.transform.GetUp() * (float)deltaTime * 1.5f;
+
+		//std::cout << glm::to_string(camera.transform.position) << std::endl;
+		//std::cout << glm::to_string(prim.transform.position) << std::endl;
+		// WHY ARE PRIM TRANSFORMS INVERTED
 
 
 		// Input
@@ -246,7 +256,16 @@ int main()
 		shaderProgram.SetFloat("ElapsedTime", elapsedTime);
 
 		camera.Bind();
-
+		//camera.LookAt(glm::vec3(0.0f));
+		/*float aspect = (GLfloat)window.GetSize().x / (GLfloat)window.GetSize().y;
+		glm::mat4 projection = glm::perspective(glm::radians(65.0f), aspect, 0.1f, 100.0f);
+		glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -3.0f), Transform::WORLD_UP);
+		ShaderProgram* shaderProgram = ShaderProgram::GetCurrent();
+		if (shaderProgram != nullptr && shaderProgram->IsValid())
+		{
+			shaderProgram->SetViewMatrix(view);
+			shaderProgram->SetProjectionMatrix(projection);
+		}*/
 
 		//Draw meshes
 		plane.Draw();
