@@ -16,7 +16,7 @@ std::vector<std::string> Mesh::ConvertToTokens(const std::string & Line, const c
 
 int Mesh::FindToken(const std::vector<std::string>& Tokens, const std::string & Snippet)
 {
-	for (int i = 0; i < Tokens.size(); i++)
+	for (unsigned int i = 0; i < Tokens.size(); i++)
 		if (Tokens[i].find(Snippet) != std::string::npos) // Found
 			return i;
 
@@ -61,7 +61,7 @@ std::vector<int> Mesh::DecodeIndicesFromToken(const std::string & Token)
 
 	if (pt.size() > 0)
 	{
-		for (int i = 0; i < pt.size(); i++)
+		for (unsigned int i = 0; i < pt.size(); i++)
 		{
 			try // We try to convert the current token to an int and push it back. If we fail then ignore it.
 			{

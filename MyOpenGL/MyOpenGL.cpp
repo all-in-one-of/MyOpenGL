@@ -5,7 +5,7 @@
 
 // Our classes
 #include "Window.h"
-#include "ShaderProgram.h"
+#include "Shader.h"
 #include "Texture2D.h"
 #include "Mesh.h"
 #include "EditorCamera.h"
@@ -22,7 +22,7 @@ const GLuint SRC_HEIGHT = 720;
 Window window;
 EditorCamera camera;
 std::string shadersDir = "../Shaders/Main";
-ShaderProgram shaderProgram;
+Shader shaderProgram;
 
 double elapsedTime = 0.0f, deltaTime = 0.0f;
 
@@ -128,12 +128,12 @@ int main(int argc, char* argv[])
 
 	// ===================================== VAO & VBO ============================================
 	
-	std::cout << argv[0] << std::endl;
 	Mesh box;
-	//box.LoadMeshObj("E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/Box_SM.obj");
 	box.LoadMeshObj("../Content/Box_SM.obj");
+	box.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
+	box.transform.position = glm::vec3(-5.0f, 0.0f, 0.0f);
 	Mesh sphere;
-	//sphere.LoadMeshObj("E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/Sphere_SM.obj");
+	sphere.LoadMeshObj("../Content/Sphere_SM.obj");
 	sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
 
@@ -222,7 +222,7 @@ int main(int argc, char* argv[])
 	while( !glfwWindowShouldClose(Window::GetCurrent()) ) // While window is open
 	{
 		// Delta & elapsed time
-		float time = glfwGetTime();
+		double time = glfwGetTime();
 		deltaTime = time - elapsedTime;
 		elapsedTime = time;
 
@@ -232,9 +232,11 @@ int main(int argc, char* argv[])
 
 
 		if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_0) == GLFW_PRESS)
-			prim.transform.position += plane.transform.GetUp() * (float)deltaTime * 1.5f;
+			box.transform.position += Transform::WORLD_RIGHT * (float)deltaTime * 1.5f;
 		else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_9) == GLFW_PRESS)
-			prim.transform.position -= plane.transform.GetUp() * (float)deltaTime * 1.5f;
+			box.transform.position -= Transform::WORLD_RIGHT * (float)deltaTime * 1.5f;
+
+		std::cout << glm::to_string(box.transform.position) << std::endl;
 
 		EditorInput(deltaTime);
 
@@ -264,7 +266,7 @@ int main(int argc, char* argv[])
 		box.Draw();
 		sphere.Draw();
 		plane.Draw();
-		/*
+		
 		//prim.transform = glm::rotate(prim.transform, glm::radians((float)deltaTime * 30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		//prim.transform.rotation *= glm::quat(0.0f, 1.0f, 0.0f, cos((float)deltaTime * 30.0f));
 		prim.Draw();
@@ -274,7 +276,7 @@ int main(int argc, char* argv[])
 			transform = glm::translate(transform, positions[i]);
 			prim.Draw(prim.transform.GetMatrix() * transform);
 		}
-		*/
+		
 
 		// Check events to call & swap buffers
 		window.SwapBuffers();

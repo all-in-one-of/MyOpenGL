@@ -18,7 +18,7 @@ Camera::~Camera()
 
 void Camera::Bind()
 {
-	ShaderProgram* shaderProgram = ShaderProgram::GetCurrent();
+	Shader* shaderProgram = Shader::GetCurrent();
 	if (shaderProgram != nullptr && shaderProgram->IsValid())
 	{
 		shaderProgram->SetViewMatrix(GetViewMatrix());

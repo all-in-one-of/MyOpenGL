@@ -31,24 +31,19 @@ glm::vec3 Transform::GetRight() const
 
 glm::mat4 Transform::GetMatrix() const
 {
-	glm::mat4 transform = glm::mat4(1.0f);
-	transform = glm::toMat4(rotation) * transform;
-	transform = glm::translate(transform, position);
-	transform = glm::scale(transform, scale);
+	glm::mat4 s = glm::scale(scale);
+	glm::mat4 r = glm::toMat4(rotation);
+	glm::mat4 t = glm::translate(position);
 
+	glm::mat4 transform = t * r * s;
 	return transform;
-
-	/*glm::mat4 s = glm::scale(glm::mat4(1.0f), scale);
-	return glm::lookAt(position, position + GetForward(), GetUp()) * s;*/
 }
 
 glm::mat4 Transform::GetMatrixWithoutScale() const
 {
-	//return glm::lookAt(position, position + GetForward(), GetUp());
+	glm::mat4 r = glm::toMat4(rotation);
+	glm::mat4 t = glm::translate(position);
 
-	glm::mat4 transform = glm::mat4(1.0f);
-	transform = glm::toMat4(rotation) * transform;
-	transform = glm::translate(transform, position);
-
+	glm::mat4 transform = t * r;
 	return transform;
 }

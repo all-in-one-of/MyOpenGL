@@ -3,7 +3,7 @@
 #include "Window.h"
 #include "Object.h"
 #include "Transform.h"
-#include "ShaderProgram.h"
+#include "Shader.h"
 
 
 class Camera : public Object

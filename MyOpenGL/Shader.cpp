@@ -1,33 +1,15 @@
 #include "Shader.h"
 
-
-
-std::string Shader::GetSource(std::string File)
-{
-	std::ifstream inFile;
-	inFile.open(File); // Try to open file
-	std::string source; // String to dump to
-
-	if (inFile.is_open()) // If open
-	{
-		std::stringstream strStream; // Stream to output to
-		strStream << inFile.rdbuf(); // Output file contents to stream
-		source = strStream.str();	 // Get string from stream
-	}
-	
-	inFile.close();
-	return source;
-}
+Shader* Shader::current = nullptr;
 
 Shader::Shader()
 {
+
 }
 
-Shader::Shader(const GLenum& ShaderType)
-	: shaderType(ShaderType)
+Shader::Shader(const std::string & Folder)
 {
-	// Shaders source
-	std::string source = GetSource("Vertex.glsl");
+	CompileShadersFromFolder(Folder);
 }
 
 
@@ -35,48 +17,115 @@ Shader::~Shader()
 {
 }
 
-GLint Shader::CompileSource(const std::string& Source)
+GLint Shader::CompileShadersFromFolder(const std::string & Folder)
 {
-	const GLchar* source_cstr = Source.c_str();
-	ID = glCreateShader(shaderType);					// Create shader and return index
-	glShaderSource(ID, 1, &source_cstr, NULL);		// Pass shader source
-	glCompileShader(ID);								// Compile the shader
-
-	GLchar infoLog[512];
-	GLint success = GetLog(infoLog);
-
-	if (success)
-		std::cout << "Shader successfully compiled: " << GetShaderType() << std::endl;
-	else
-		std::cout << "Error: Shader failed to compile: " << GetShaderType() << "\n" << std::string(infoLog) << std::endl;
+	GLint success = 1;
+	
+	// Shaders
+	vertexShader = SubShader(GL_VERTEX_SHADER);
+	success = vertexShader.CompileFile(Folder + "/Vertex.glsl") && success;
+	fragmentShader = SubShader(GL_FRAGMENT_SHADER);
+	success = fragmentShader.CompileFile(Folder + "/Fragment.glsl") && success;
 
 	return success;
 }
 
-
-GLint Shader::CompileFile(const std::string& File)
+GLint Shader::LinkShaders()
 {
-	std::string source = Shader::GetSource(File);
-	return CompileSource(source);
-}
+	// Shader program
+	ID = glCreateProgram();
+	glAttachShader(ID, vertexShader.GetID());
+	glAttachShader(ID, fragmentShader.GetID());
+	glLinkProgram(ID); // Link our shaders to the shader program
 
-GLint Shader::GetLog(GLchar* InfoLog)
-{
-#define LOG_SIZE 512
-
+	// Shader program debugging
 	GLint success;
-	glGetShaderiv(ID, GL_COMPILE_STATUS, &success);
-
+	GLchar infoLog[512];
+	glGetProgramiv(ID, GL_LINK_STATUS, &success);
 	if (!success)
-		glGetShaderInfoLog(ID, LOG_SIZE, NULL, InfoLog);
+	{
+		glGetProgramInfoLog(ID, 512, NULL, infoLog);
+		std::cout << "Error: Shaders failed to link" << infoLog << std::endl;
+	}
+	else
+		std::cout << "Shaders successfully linked" << std::endl;
+
+	glDeleteShader(vertexShader.GetID());
+	glDeleteShader(fragmentShader.GetID());
 
 	return success;
 }
 
-std::string Shader::GetShaderType()
+void Shader::Bind()
 {
-	if (shaderType == GL_FRAGMENT_SHADER)
-		return "FRAGMENT";
+	glUseProgram(ID);
+	current = this;
+}
+
+void Shader::Unbind()
+{
+	glUseProgram(-1);
+}
+
+void Shader::SetBool(const GLchar* Name, const GLboolean& Value) const
+{
+	SetInt(Name, Value);
+}
+
+void Shader::SetInt(const GLchar* Name, const GLint& Value) const
+{
+	glUniform1i(GetUniformLocation(Name), Value);
+}
+
+void Shader::SetFloat(const GLchar * Name, const GLfloat& Value) const
+{
+	glUniform1f(GetUniformLocation(Name), Value);
+}
+
+void Shader::SetVec3(const GLchar * Name, const glm::vec3 & Value) const
+{
+	glUniform3f(GetUniformLocation(Name), Value.x, Value.y, Value.z);
+}
+
+void Shader::SetMatrix4x4(const GLchar * Name, const glm::mat4& Value) const
+{
+	glUniformMatrix4fv(GetUniformLocation(Name), 1, GL_FALSE, glm::value_ptr(Value));
+}
+
+void Shader::SetModelMatrix(const glm::mat4 & Model) const
+{
+	SetMatrix4x4(MODEL_MATRIX, Model);
+}
+
+void Shader::SetViewMatrix(const glm::mat4& View) const
+{
+	SetMatrix4x4(VIEW_MATRIX, View);
+}
+
+void Shader::SetProjectionMatrix(const glm::mat4& Projection) const
+{
+	SetMatrix4x4(PROJECTION_MATRIX, Projection);
+}
+
+void Shader::SetCameraPosition(const glm::vec3 & ViewPosition) const
+{
+	SetVec3("CameraPosition", ViewPosition);
+}
+
+void Shader::SetCameraDirection(const glm::vec3 & ViewDirection) const
+{
+	SetVec3("CameraDirection", ViewDirection);
+}
+
+GLint Shader::GetUniformLocation(const GLchar* Name) const
+{
+	if (IsValid())
+		return glGetUniformLocation(ID, Name);
 	else
-		return "VERTEX";
+		return -1;
+}
+
+Shader * Shader::GetCurrent()
+{
+	return current;
 }

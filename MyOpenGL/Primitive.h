@@ -2,7 +2,7 @@
 
 #include "Transform.h"
 #include "Object.h"
-#include "ShaderProgram.h"
+#include "Shader.h"
 
 #include <vector>
 
