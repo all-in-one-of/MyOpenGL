@@ -82,6 +82,11 @@ void ShaderProgram::SetFloat(const GLchar * Name, const GLfloat& Value) const
 	glUniform1f(GetUniformLocation(Name), Value);
 }
 
+void ShaderProgram::SetVec3(const GLchar * Name, const glm::vec3 & Value) const
+{
+	glUniform3f(GetUniformLocation(Name), Value.x, Value.y, Value.z);
+}
+
 void ShaderProgram::SetMatrix4x4(const GLchar * Name, const glm::mat4& Value) const
 {
 	glUniformMatrix4fv(GetUniformLocation(Name), 1, GL_FALSE, glm::value_ptr(Value));
@@ -100,6 +105,16 @@ void ShaderProgram::SetViewMatrix(const glm::mat4& View) const
 void ShaderProgram::SetProjectionMatrix(const glm::mat4& Projection) const
 {
 	SetMatrix4x4(PROJECTION_MATRIX, Projection);
+}
+
+void ShaderProgram::SetCameraPosition(const glm::vec3 & ViewPosition) const
+{
+	SetVec3("CameraPosition", ViewPosition);
+}
+
+void ShaderProgram::SetCameraDirection(const glm::vec3 & ViewDirection) const
+{
+	SetVec3("CameraDirection", ViewDirection);
 }
 
 GLint ShaderProgram::GetUniformLocation(const GLchar* Name) const

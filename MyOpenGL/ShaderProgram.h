@@ -47,6 +47,7 @@ public:
 	void SetBool(const GLchar* Name, const GLboolean& Value) const;
 	void SetInt(const GLchar* Name, const GLint& Value) const;
 	void SetFloat(const GLchar* Name, const GLfloat& Value) const;
+	void SetVec3(const GLchar* Name, const glm::vec3& Value) const;
 	void SetMatrix4x4(const GLchar* Name, const glm::mat4& Value) const;
 	//void SetTextureSampler(const GLchar* Name, const Texture& Tex) const;
 
@@ -55,6 +56,8 @@ public:
 	void SetModelMatrix(const glm::mat4& Model) const;
 	void SetViewMatrix(const glm::mat4& View) const;
 	void SetProjectionMatrix(const glm::mat4& Projection) const;
+	void SetCameraPosition(const glm::vec3& ViewPosition) const;
+	void SetCameraDirection(const glm::vec3& ViewDirection) const;
 
 
 	// Getters

@@ -23,6 +23,8 @@ void Camera::Bind()
 	{
 		shaderProgram->SetViewMatrix(GetViewMatrix());
 		shaderProgram->SetProjectionMatrix(GetProjectionMatrix());
+		shaderProgram->SetCameraPosition(transform.position);
+		shaderProgram->SetCameraDirection(GetForward());
 	}
 }
 
