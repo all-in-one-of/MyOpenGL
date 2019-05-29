@@ -47,6 +47,8 @@ Primitive::~Primitive()
 
 void Primitive::Construct()
 {
+	Destroy(); // First destroy to make sure we don't cause a memory leak
+
 	// Convert vectors to array data
 	std::vector<GLfloat> rawVertices = GetRawVertices(); // Get raw vertex data as list of floats
 	GLfloat* rawVerticesPt = rawVertices.data();		 // Convert list of floats to array (pointer to memory). We don't know the size of this without the vector.
@@ -86,21 +88,6 @@ void Primitive::Construct()
 		glEnableVertexAttribArray(attrib);
 		attrib++;
 	};
-
-	/*// Position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, memorySize, (void*)stride); // change me
-	stride += 3 * sizeof(GLfloat);
-	glEnableVertexAttribArray(0);
-
-	// TexCoord
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, memorySize, (void*)stride); // change me
-	stride += 2 * sizeof(GLfloat);
-	glEnableVertexAttribArray(1);
-
-	// Vertex Colour
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, memorySize, (void*)stride); // change me
-	stride += 3 * sizeof(GLfloat);
-	glEnableVertexAttribArray(2);*/
 
 	AddAttribute(3); // Position
 	AddAttribute(2); // TexCoord
@@ -146,6 +133,37 @@ void Primitive::Destroy()
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
+}
+
+void Primitive::WeldAllVertices()
+{
+	/*std::cout << "Pre-optimised mesh stats:" << std::endl;
+	std::cout << "vertices size = " << std::to_string(vertices.size()) << std::endl;
+	std::cout << "indices size = " << std::to_string(indices.size()) << std::endl;
+	std::cout << "indices:" << std::endl;
+	for (int i = 0; i < indices.size(); i++)
+		std::cout << std::to_string(indices[i]) << "||";
+	std::cout << std::endl;
+
+	std::vector<Vertex> cached(vertices); // Copy vector so we can be safe when iterating vertices
+	for (int i = cached.size() - 1; i > 0; i--)
+	{
+		// weld
+	}
+
+
+	std::cout << "Optimised mesh stats:" << std::endl;
+	std::cout << "vertices size = " << std::to_string(vertices.size()) << std::endl;
+	std::cout << "indices size = " << std::to_string(indices.size()) << std::endl;
+	std::cout << "indices:" << std::endl;
+	for (int i = 0; i < indices.size(); i++)
+		std::cout << std::to_string(indices[i]) << "||";
+	std::cout << std::endl;*/
+}
+
+void Primitive::WeldVertices(const std::vector<int>& Indices)
+{
+
 }
 
 void Primitive::AddVertex(const Vertex & NewVertex)

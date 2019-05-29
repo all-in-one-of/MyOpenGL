@@ -36,10 +36,10 @@ private:
 
 protected:
 	std::vector<GLfloat> GetRawVertices() const;
+	glm::vec3 minBounds, maxBounds;
 
 public:
 	// Properties
-	//glm::mat4 transform = glm::mat4(1.0f);
 	Transform transform;
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
@@ -59,6 +59,9 @@ public:
 	void Draw(const glm::mat4& Transform);
 	void Draw();
 	void Destroy();
+	void WeldAllVertices();
+	void WeldVertices(const std::vector<int>& Indices);
+	//void CalculateBounds(); // IMPLMENT ME
 
 
 	// Setters

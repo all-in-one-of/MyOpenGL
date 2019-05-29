@@ -7,7 +7,7 @@
 #include "Window.h"
 #include "ShaderProgram.h"
 #include "Texture2D.h"
-#include "Primitive.h"
+#include "Mesh.h"
 #include "EditorCamera.h"
 
 
@@ -19,6 +19,8 @@ const GLuint SRC_WIDTH = 1280;
 const GLuint SRC_HEIGHT = 720;
 Window window;
 EditorCamera camera;
+std::string shadersDir = "E:/Documents/PostUniversity/OpenGL/MyOpenGL/Shaders/Main";
+ShaderProgram shaderProgram;
 
 double elapsedTime = 0.0f, deltaTime = 0.0f;
 
@@ -32,6 +34,40 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 void MouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
 	camera.UpdateMouse(deltaTime, glm::vec2(xpos, ypos));
+}
+
+void EditorInput(const float& DeltaTime)
+{
+	// Input
+	if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close window on escape press
+		glfwSetWindowShouldClose(Window::GetCurrent(), true);
+
+	else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_1) == GLFW_PRESS)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		std::cout << "MODE: LIT" << std::endl;
+	}
+	else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_2) == GLFW_PRESS)
+	{
+		glLineWidth(5.0f);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		std::cout << "MODE: WIREFRAME" << std::endl;
+	}
+	else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_3) == GLFW_PRESS)
+	{
+		glPointSize(5.0f);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+		std::cout << "MODE: POINTS" << std::endl;
+	}
+	else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_R) == GLFW_PRESS) // HOT RECOMPILE
+	{
+		std::cout << "SHADERS HOT RECOMPILE" << std::endl;
+		shaderProgram.CompileShadersFromFolder(shadersDir);
+		shaderProgram.LinkShaders();
+		shaderProgram.Bind();
+		shaderProgram.SetInt("tex", 0);
+		shaderProgram.SetInt("tex2", 1);
+	}
 }
 
 // ===================================== MAIN ============================================
@@ -73,8 +109,6 @@ int main()
 
 	// ===================================== SHADERS ============================================
 
-	std::string shadersDir = "E:/Documents/PostUniversity/OpenGL/MyOpenGL/Shaders/Main";
-	ShaderProgram shaderProgram;
 	shaderProgram.CompileShadersFromFolder(shadersDir);
 	shaderProgram.LinkShaders();
 
@@ -92,6 +126,13 @@ int main()
 
 	// ===================================== VAO & VBO ============================================
 	
+	Mesh box;
+	box.LoadMeshObj("E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/Box_SM.obj");
+	Mesh sphere;
+	sphere.LoadMeshObj("E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/Sphere_SM.obj");
+	sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
+
+
 	Primitive plane;
 
 	plane.AddVertex(Primitive::Vertex({  0.5f,  0.0f, -0.5f }, { 1.0f, 1.0f })); // Front - Top right
@@ -187,47 +228,12 @@ int main()
 
 
 		if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_0) == GLFW_PRESS)
-			//plane.transform.scale += glm::vec3(deltaTime * 1.5f);
 			prim.transform.position += plane.transform.GetUp() * (float)deltaTime * 1.5f;
 		else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_9) == GLFW_PRESS)
-			//plane.transform.scale -= glm::vec3(deltaTime * 1.5f);
 			prim.transform.position -= plane.transform.GetUp() * (float)deltaTime * 1.5f;
 
-		//std::cout << glm::to_string(camera.transform.position) << std::endl;
-		//std::cout << glm::to_string(prim.transform.position) << std::endl;
-		// WHY ARE PRIM TRANSFORMS INVERTED
+		EditorInput(deltaTime);
 
-
-		// Input
-		if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close window on escape press
-			glfwSetWindowShouldClose(Window::GetCurrent(), true);
-
-		else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_1) == GLFW_PRESS)
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			std::cout << "MODE: LIT" << std::endl;
-		}
-		else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_2) == GLFW_PRESS)
-		{
-			glLineWidth(5.0f);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			std::cout << "MODE: WIREFRAME" << std::endl;
-		}
-		else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_3) == GLFW_PRESS)
-		{
-			glPointSize(5.0f);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-			std::cout << "MODE: POINTS" << std::endl;
-		}
-		else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_R) == GLFW_PRESS) // HOT RECOMPILE
-		{
-			std::cout << "SHADERS HOT RECOMPILE" << std::endl;
-			shaderProgram.CompileShadersFromFolder(shadersDir);
-			shaderProgram.LinkShaders();
-			shaderProgram.Bind();
-			shaderProgram.SetInt("tex", 0);
-			shaderProgram.SetInt("tex2", 1);
-		}
 
 		// Clear screen with colour
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0);
@@ -251,7 +257,10 @@ int main()
 		camera.Bind();
 
 		//Draw meshes
+		box.Draw();
+		sphere.Draw();
 		plane.Draw();
+		/*
 		//prim.transform = glm::rotate(prim.transform, glm::radians((float)deltaTime * 30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		//prim.transform.rotation *= glm::quat(0.0f, 1.0f, 0.0f, cos((float)deltaTime * 30.0f));
 		prim.Draw();
@@ -261,7 +270,7 @@ int main()
 			transform = glm::translate(transform, positions[i]);
 			prim.Draw(prim.transform.GetMatrix() * transform);
 		}
-
+		*/
 
 		// Check events to call & swap buffers
 		window.SwapBuffers();
@@ -272,6 +281,7 @@ int main()
 
 	// ===================================== CLEAN-UP ============================================
 
+	box.Destroy();
 	prim.Destroy();
 	plane.Destroy();
 
