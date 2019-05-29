@@ -14,11 +14,10 @@ class Window
 {
 private:
 	static void Resized(GLFWwindow* Window, int Width, int Height);
-	
+	static Window* current;
 
 public:
 	// Properties
-	//static Window* current;
 	GLFWwindow* window;
 
 	Window();
@@ -28,9 +27,12 @@ public:
 	// Methods
 	GLint Create(const GLuint& Width, const GLuint& Height, const GLchar* WindowName = "NewWindow");
 	void SwapBuffers();
+	void Bind();
 
 	
 	// Getters
 	glm::ivec2 GetSize() const;
+	static GLFWwindow* GetCurrent();
+	static Window* GetCurrentObject();
 };
 

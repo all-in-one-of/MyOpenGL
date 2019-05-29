@@ -1,6 +1,6 @@
 #include "Window.h"
 
-//Window* Window::current = nullptr;
+Window* Window::current = nullptr;
 
 void Window::Resized(GLFWwindow * Window, int Width, int Height)
 {
@@ -42,9 +42,24 @@ void Window::SwapBuffers()
 	glfwSwapBuffers(window); // Swap the colour buffer and show to screen
 }
 
+void Window::Bind()
+{
+	Window::current = this;
+}
+
 glm::ivec2 Window::GetSize() const
 {
 	GLint width, height;
 	glfwGetWindowSize(window, &width, &height);
 	return glm::ivec2(width, height);
+}
+
+GLFWwindow * Window::GetCurrent()
+{
+	return GetCurrentObject()->window;
+}
+
+Window * Window::GetCurrentObject()
+{
+	return Window::current;
 }

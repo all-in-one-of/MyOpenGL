@@ -18,14 +18,13 @@
 const GLuint SRC_WIDTH = 800;
 const GLuint SRC_HEIGHT = 600;
 Window window;
-Camera camera;
+EditorCamera camera;
 
 // ===================================== EVENTS ============================================
 
-void FramebufferSizeCallback(GLFWwindow* Window, int Width, int Height)
+void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	// Make sure viewport matches new window dimensions when resized
-	glViewport(0, 0, Width, Height);
+	camera.fieldOfView = (GLfloat)std::clamp(((double)camera.fieldOfView - yoffset * 2.5f), (double)1.0f, (double)90.0f);
 }
 
 
@@ -42,6 +41,8 @@ int main()
 
 	// GLFW create window
 	window = Window(SRC_WIDTH, SRC_HEIGHT, "MyOpenGL");
+	glfwSetScrollCallback(window.window, ScrollCallback);
+
 
 	// ===================================== LOAD IN OPENGL CONTEXT ============================================
 
@@ -159,7 +160,6 @@ int main()
 	camera.fieldOfView = 45.0f;
 	camera.transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
 	//camera.transform.rotation = glm::quat(glm::vec3(0.0f, glm::radians(180.0f), 0.0));
-	std::cout << glm::to_string(plane.transform.GetRight()) << std::endl;
 
 
 
@@ -169,6 +169,8 @@ int main()
 
 	while( !glfwWindowShouldClose(window.window) ) // While window is open
 	{
+		window.Bind();
+
 		// Delta & elapsed time
 		float time = glfwGetTime();
 		deltaTime = time - elapsedTime;
@@ -176,27 +178,13 @@ int main()
 
 
 		// Camera controls
-		float camSpeed = 1.5f;
-		camSpeed = glfwGetKey(window.window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? camSpeed * 2.5f : camSpeed;
-		//std::cout << glm::to_string(camera.transform.position) << std::endl;
+		camera.Update(deltaTime);
 
-		if (glfwGetKey(window.window, GLFW_KEY_W) == GLFW_PRESS)
-			camera.transform.position += camera.GetForward() * (float)deltaTime * camSpeed;
-		else if (glfwGetKey(window.window, GLFW_KEY_S) == GLFW_PRESS)
-			camera.transform.position -= camera.GetForward() *(float)deltaTime * camSpeed;
-		if (glfwGetKey(window.window, GLFW_KEY_A) == GLFW_PRESS)
-			camera.transform.position -= camera.transform.GetRight() * (float)deltaTime * camSpeed;
-		else if (glfwGetKey(window.window, GLFW_KEY_D) == GLFW_PRESS)
-			camera.transform.position += camera.transform.GetRight() * (float)deltaTime * camSpeed;
-		if (glfwGetKey(window.window, GLFW_KEY_Q) == GLFW_PRESS)
-			camera.transform.position += Transform::WORLD_UP * (float)deltaTime * camSpeed;
-		else if (glfwGetKey(window.window, GLFW_KEY_E) == GLFW_PRESS)
-			camera.transform.position -= Transform::WORLD_UP * (float)deltaTime * camSpeed;
 
-		if (glfwGetKey(window.window, GLFW_KEY_0) == GLFW_PRESS)
+		if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_0) == GLFW_PRESS)
 			//plane.transform.scale += glm::vec3(deltaTime * 1.5f);
 			prim.transform.position += plane.transform.GetUp() * (float)deltaTime * 1.5f;
-		else if (glfwGetKey(window.window, GLFW_KEY_9) == GLFW_PRESS)
+		else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_9) == GLFW_PRESS)
 			//plane.transform.scale -= glm::vec3(deltaTime * 1.5f);
 			prim.transform.position -= plane.transform.GetUp() * (float)deltaTime * 1.5f;
 
@@ -206,27 +194,27 @@ int main()
 
 
 		// Input
-		if (glfwGetKey(window.window, GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close window on escape press
-			glfwSetWindowShouldClose(window.window, true);
+		if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close window on escape press
+			glfwSetWindowShouldClose(Window::GetCurrent(), true);
 
-		else if (glfwGetKey(window.window, GLFW_KEY_1) == GLFW_PRESS)
+		else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_1) == GLFW_PRESS)
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			std::cout << "MODE: LIT" << std::endl;
 		}
-		else if (glfwGetKey(window.window, GLFW_KEY_2) == GLFW_PRESS)
+		else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_2) == GLFW_PRESS)
 		{
 			glLineWidth(5.0f);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			std::cout << "MODE: WIREFRAME" << std::endl;
 		}
-		else if (glfwGetKey(window.window, GLFW_KEY_3) == GLFW_PRESS)
+		else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_3) == GLFW_PRESS)
 		{
 			glPointSize(5.0f);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 			std::cout << "MODE: POINTS" << std::endl;
 		}
-		else if (glfwGetKey(window.window, GLFW_KEY_R) == GLFW_PRESS) // HOT RECOMPILE
+		else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_R) == GLFW_PRESS) // HOT RECOMPILE
 		{
 			std::cout << "SHADERS HOT RECOMPILE" << std::endl;
 			shaderProgram.CompileShadersFromFolder(shadersDir);
@@ -256,16 +244,6 @@ int main()
 		shaderProgram.SetFloat("ElapsedTime", elapsedTime);
 
 		camera.Bind();
-		//camera.LookAt(glm::vec3(0.0f));
-		/*float aspect = (GLfloat)window.GetSize().x / (GLfloat)window.GetSize().y;
-		glm::mat4 projection = glm::perspective(glm::radians(65.0f), aspect, 0.1f, 100.0f);
-		glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -3.0f), Transform::WORLD_UP);
-		ShaderProgram* shaderProgram = ShaderProgram::GetCurrent();
-		if (shaderProgram != nullptr && shaderProgram->IsValid())
-		{
-			shaderProgram->SetViewMatrix(view);
-			shaderProgram->SetProjectionMatrix(projection);
-		}*/
 
 		//Draw meshes
 		plane.Draw();
@@ -290,6 +268,7 @@ int main()
 	// ===================================== CLEAN-UP ============================================
 
 	prim.Destroy();
+	plane.Destroy();
 
 	glfwTerminate(); // Clean up GLFW context
 	return 0; // Return success code

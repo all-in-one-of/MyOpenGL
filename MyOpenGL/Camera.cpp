@@ -45,6 +45,16 @@ glm::vec3 Camera::GetForward() const
 	return -transform.GetForward();
 }
 
+glm::vec3 Camera::GetRight() const
+{
+	return transform.GetRight();
+}
+
+glm::vec3 Camera::GetUp() const
+{
+	return transform.GetUp();
+}
+
 glm::mat4 Camera::GetProjectionMatrix() const
 {
 	return glm::perspective(glm::radians(fieldOfView), aspect, nearPlane, farPlane);
