@@ -236,7 +236,6 @@ int main(int argc, char* argv[])
 		else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_9) == GLFW_PRESS)
 			box.transform.position -= Transform::WORLD_RIGHT * (float)deltaTime * 1.5f;
 
-		std::cout << glm::to_string(box.transform.position) << std::endl;
 
 		EditorInput(deltaTime);
 

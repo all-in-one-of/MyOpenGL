@@ -107,7 +107,7 @@ void Mesh::LoadMeshObj(const std::string & File)
 		auto VertexFromIndex = [&](const std::string& Token)
 		{
 			std::vector<int> newIndices = DecodeIndicesFromToken(Token); // Try to decode
-			
+
 			if (newIndices.size() > 0) // If we successfully decoded the token, then we add a vertex and point to it
 			{
 				indices.push_back(indices.size());
@@ -165,7 +165,7 @@ void Mesh::LoadMeshObj(const std::string & File)
 		while (std::getline(inFile, line))
 		{
 			std::vector<std::string> tokens = ConvertToTokens(line, ' '); // Parse line into tokens by splitting whitespaces
-			
+
 			// Parse line
 			if (tokens[0] == "f") // End of geometry, start pairing up vertices
 			{
@@ -177,7 +177,11 @@ void Mesh::LoadMeshObj(const std::string & File)
 				//	VertexFromIndex(tokens[4]);
 			}
 		}
+
+		std::cout << "Mesh successfully loaded: '" << File << "'\n";
 	}
+	else
+		std::cout << "Error: Mesh failed to load: '" << File << "'\n";
 
 	inFile.close();
 	WeldAllVertices(); // Optimise
