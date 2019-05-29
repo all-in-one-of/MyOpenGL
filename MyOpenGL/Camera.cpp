@@ -43,11 +43,6 @@ void Camera::LookAt(const glm::vec3 & Target)
 	transform.rotation = r;
 }
 
-void Camera::SetAspect(const GLuint & Width, const GLuint & Height)
-{
-	aspect = (GLfloat)Width / (GLfloat)Height;
-}
-
 glm::vec3 Camera::GetForward()
 {
 	UpdateRotation();
@@ -68,6 +63,18 @@ glm::vec3 Camera::GetUp()
 
 glm::mat4 Camera::GetProjectionMatrix() const
 {
+	GLfloat aspect;
+
+	Window* window = Window::GetCurrentObject();
+	if (window != nullptr)
+	{
+		glm::ivec2 size = window->GetSize();
+		aspect = (GLfloat)size.x / (GLfloat)size.y;
+	}
+	else
+		aspect = 1920.0f / 1080.0f;
+
+
 	return glm::perspective(glm::radians(fieldOfView), aspect, nearPlane, farPlane);
 }
 

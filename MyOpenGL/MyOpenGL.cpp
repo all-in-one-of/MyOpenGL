@@ -15,8 +15,8 @@
 //namespace FileSystem = std::filesystem;
 
 
-const GLuint SRC_WIDTH = 800;
-const GLuint SRC_HEIGHT = 600;
+const GLuint SRC_WIDTH = 1280;
+const GLuint SRC_HEIGHT = 720;
 Window window;
 EditorCamera camera;
 
@@ -65,8 +65,7 @@ int main()
 
 	// ===================================== CAMERA ============================================
 
-	camera.SetAspect(SRC_WIDTH, SRC_HEIGHT);
-	camera.fieldOfView = 45.0f;
+	camera.fieldOfView = 65.0f;
 	camera.transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
 	camera.cursorPosition = glm::vec2((GLfloat)window.GetSize().x / 2.0f, (GLfloat)window.GetSize().y / 2.0f);
 	//camera.transform.rotation = glm::quat(glm::vec3(0.0f, glm::radians(180.0f), 0.0));
