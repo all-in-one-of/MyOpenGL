@@ -31,8 +31,10 @@ GLint  Window::Create(const GLuint& Width, const GLuint& Height, const GLchar* W
 		glfwTerminate();
 		return -1; // Error
 	}
-	glfwMakeContextCurrent(window); // Set context to our new window
 	glfwSetFramebufferSizeCallback(window, Window::Resized);
+
+
+	Bind();
 
 	return 1; // Success
 }
@@ -45,6 +47,7 @@ void Window::SwapBuffers()
 void Window::Bind()
 {
 	Window::current = this;
+	glfwMakeContextCurrent(window); // Set context to our new window
 }
 
 glm::ivec2 Window::GetSize() const

@@ -6,6 +6,9 @@
 
 class Camera : public Object
 {
+private:
+	void UpdateRotation();
+
 public:
 	// Properties
 	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -14,6 +17,8 @@ public:
 	GLfloat nearPlane = 0.1f;
 	GLfloat farPlane = 100.0f;
 	GLfloat fieldOfView = 65.0f;
+
+	float yaw = 0.0f, pitch = 0.0f, roll = 0.0f; // We control the quaternion rotation directly from yaw, pitch, and roll. This is more suitable for controlling a camera.
 
 
 	// Constructors & destructors
@@ -28,10 +33,10 @@ public:
 
 
 	// Getters
-	glm::vec3 GetForward() const;
-	glm::vec3 GetRight() const;
-	glm::vec3 GetUp() const;
+	glm::vec3 GetForward();
+	glm::vec3 GetRight();
+	glm::vec3 GetUp();
 	glm::mat4 GetProjectionMatrix() const;
-	glm::mat4 GetViewMatrix() const;
+	glm::mat4 GetViewMatrix();
 };
 

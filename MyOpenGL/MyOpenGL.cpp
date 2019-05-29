@@ -20,13 +20,19 @@ const GLuint SRC_HEIGHT = 600;
 Window window;
 EditorCamera camera;
 
+double elapsedTime = 0.0f, deltaTime = 0.0f;
+
 // ===================================== EVENTS ============================================
 
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.fieldOfView = (GLfloat)std::clamp(((double)camera.fieldOfView - yoffset * 2.5f), (double)1.0f, (double)90.0f);
+	camera.UpdateFOV(deltaTime, glm::vec2(xoffset, yoffset));
 }
 
+void MouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	camera.UpdateMouse(deltaTime, glm::vec2(xpos, ypos));
+}
 
 // ===================================== MAIN ============================================
 
@@ -42,6 +48,8 @@ int main()
 	// GLFW create window
 	window = Window(SRC_WIDTH, SRC_HEIGHT, "MyOpenGL");
 	glfwSetScrollCallback(window.window, ScrollCallback);
+	glfwSetCursorPosCallback(window.window, MouseCallback);
+	glfwSetInputMode(window.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Capture cursor input but always reset cursor to screen centre
 
 
 	// ===================================== LOAD IN OPENGL CONTEXT ============================================
@@ -54,6 +62,14 @@ int main()
 	}
 
 	glEnable(GL_DEPTH_TEST);
+
+	// ===================================== CAMERA ============================================
+
+	camera.SetAspect(SRC_WIDTH, SRC_HEIGHT);
+	camera.fieldOfView = 45.0f;
+	camera.transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
+	camera.cursorPosition = glm::vec2((GLfloat)window.GetSize().x / 2.0f, (GLfloat)window.GetSize().y / 2.0f);
+	//camera.transform.rotation = glm::quat(glm::vec3(0.0f, glm::radians(180.0f), 0.0));
 
 
 	// ===================================== SHADERS ============================================
@@ -154,23 +170,12 @@ int main()
 	prim.Construct();
 	std::vector<glm::vec3> positions = { glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(2.0f, -1.0f, -.5f), glm::vec3(-2.0f, 1.5f, -2.0f) };
 
-	// ===================================== CAMERA ============================================
-
-	camera.SetAspect(SRC_WIDTH, SRC_HEIGHT);
-	camera.fieldOfView = 45.0f;
-	camera.transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
-	//camera.transform.rotation = glm::quat(glm::vec3(0.0f, glm::radians(180.0f), 0.0));
-
-
 
 	// ===================================== MAIN THREAD ============================================
 
-	double elapsedTime = 0.0f, deltaTime = 0.0f;
-
-	while( !glfwWindowShouldClose(window.window) ) // While window is open
+	window.Bind();
+	while( !glfwWindowShouldClose(Window::GetCurrent()) ) // While window is open
 	{
-		window.Bind();
-
 		// Delta & elapsed time
 		float time = glfwGetTime();
 		deltaTime = time - elapsedTime;
