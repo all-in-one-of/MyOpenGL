@@ -25,6 +25,8 @@ public:
 			: position(Position) {};
 		Vertex(const glm::vec3& Position, const glm::vec2& TexCoord)
 			: position(Position), texCoord(TexCoord) {};
+		Vertex(const glm::vec3& Position, const glm::vec2& TexCoord, const glm::vec3& Normal)
+			: position(Position), texCoord(TexCoord), normal(Normal) {};
 		~Vertex() {};
 	};
 
@@ -61,6 +63,7 @@ public:
 
 	// Setters
 	void AddVertex(const Vertex& NewVertex);
+	void SetColour(const glm::vec3& Colour);
 
 
 	// Getters

@@ -6,18 +6,30 @@ std::vector<GLfloat> Primitive::GetRawVertices() const
 {
 	std::vector<GLfloat> rawVertices;
 
+	// Lambdas
+	auto AddVec3 = [&] (glm::vec3 v)
+	{
+		rawVertices.push_back(v.x);
+		rawVertices.push_back(v.y);
+		rawVertices.push_back(v.z);
+	};
+
+	auto AddVec2 = [&](glm::vec2 v)
+	{
+		rawVertices.push_back(v.x);
+		rawVertices.push_back(v.y);
+	};
+
+	
+	// Convert attributes to vertex list
 	for (int i = 0; i < vertices.size(); i++)
 	{
 		Vertex v = vertices[i];
 
-		// Position
-		rawVertices.push_back(v.position.x);
-		rawVertices.push_back(v.position.y);
-		rawVertices.push_back(v.position.z);
-
-		// TexCoords
-		rawVertices.push_back(v.texCoord.x); // U
-		rawVertices.push_back(v.texCoord.y); // V
+		AddVec3(v.position);
+		AddVec2(v.texCoord);
+		AddVec3(v.colour);
+		AddVec3(v.normal);
 	}
 
 	return rawVertices;
@@ -63,12 +75,37 @@ void Primitive::Construct()
 
 
 	// Attributes
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)0); // change me
+	GLuint attrib = 0;
+	GLuint memorySize = 11 * sizeof(GLfloat);
+	GLuint stride = 0;
+
+	auto AddAttribute = [&](GLuint Size, GLenum Normalized = GL_FALSE)
+	{
+		glVertexAttribPointer(attrib, Size, GL_FLOAT, Normalized, memorySize, (void*)stride); // change me
+		stride += Size * sizeof(GLfloat);
+		glEnableVertexAttribArray(attrib);
+		attrib++;
+	};
+
+	/*// Position
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, memorySize, (void*)stride); // change me
+	stride += 3 * sizeof(GLfloat);
 	glEnableVertexAttribArray(0);
-	// texture coord attribute
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat))); // change me
+
+	// TexCoord
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, memorySize, (void*)stride); // change me
+	stride += 2 * sizeof(GLfloat);
 	glEnableVertexAttribArray(1);
+
+	// Vertex Colour
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, memorySize, (void*)stride); // change me
+	stride += 3 * sizeof(GLfloat);
+	glEnableVertexAttribArray(2);*/
+
+	AddAttribute(3); // Position
+	AddAttribute(2); // TexCoord
+	AddAttribute(3); // Colour
+	AddAttribute(4, GL_TRUE); // Normal
 }
 
 void Primitive::Draw(const glm::mat4& Transform)
@@ -114,6 +151,12 @@ void Primitive::Destroy()
 void Primitive::AddVertex(const Vertex & NewVertex)
 {
 	vertices.push_back(NewVertex);
+}
+
+void Primitive::SetColour(const glm::vec3 & Colour)
+{
+	for (int i = 0; i < vertices.size(); i++)
+		vertices[i].colour = Colour;
 }
 
 GLuint Primitive::GetVBO() const
