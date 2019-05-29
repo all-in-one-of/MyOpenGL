@@ -10,6 +10,8 @@
 #include "Mesh.h"
 #include "EditorCamera.h"
 
+//#include <filesystem>
+
 
 //#include <filesystem>
 //namespace FileSystem = std::filesystem;
@@ -19,7 +21,7 @@ const GLuint SRC_WIDTH = 1280;
 const GLuint SRC_HEIGHT = 720;
 Window window;
 EditorCamera camera;
-std::string shadersDir = "E:/Documents/PostUniversity/OpenGL/MyOpenGL/Shaders/Main";
+std::string shadersDir = "../Shaders/Main";
 ShaderProgram shaderProgram;
 
 double elapsedTime = 0.0f, deltaTime = 0.0f;
@@ -72,7 +74,7 @@ void EditorInput(const float& DeltaTime)
 
 // ===================================== MAIN ============================================
 
-int main()
+int main(int argc, char* argv[])
 {
 	// GLFW initialize
 	glfwInit();
@@ -115,10 +117,10 @@ int main()
 
 	// ===================================== TEXTURES ============================================
 
-	Texture tex = Texture("E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/1024x1024 Texel Density Texture 1.png");
+	Texture tex = Texture("../Content/1024x1024 Texel Density Texture 1.png");
 	Texture tex2;
 	tex2.format = Texture::Format::RGBA;
-	tex2.LoadResource("E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/houdini-763d999dfe.png");
+	tex2.LoadResource("../Content/houdini-763d999dfe.png");
 	shaderProgram.Bind();
 	shaderProgram.SetInt("tex", 0);
 	shaderProgram.SetInt("tex2", 1);
@@ -126,10 +128,12 @@ int main()
 
 	// ===================================== VAO & VBO ============================================
 	
+	std::cout << argv[0] << std::endl;
 	Mesh box;
-	box.LoadMeshObj("E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/Box_SM.obj");
+	//box.LoadMeshObj("E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/Box_SM.obj");
+	box.LoadMeshObj("../Content/Box_SM.obj");
 	Mesh sphere;
-	sphere.LoadMeshObj("E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/Sphere_SM.obj");
+	//sphere.LoadMeshObj("E:/Documents/PostUniversity/OpenGL/MyOpenGL/Content/Sphere_SM.obj");
 	sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
 
