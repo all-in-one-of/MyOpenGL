@@ -11,12 +11,17 @@
 
 #include "Texture.h"
 #include "SubShader.h"
+#include "Camera.h"
+
+#include <algorithm>
 
 
 class Shader : public Object
 {
 private:
+	//static std::vector<std::shared_ptr<Shader>> all;
 	static Shader* current;
+	void Create();
 
 public:
 
@@ -26,8 +31,9 @@ public:
 	const GLchar* PROJECTION_MATRIX = "Projection";
 
 
-	// Shaders
-	SubShader vertexShader, fragmentShader;
+	// Properties
+	SubShader vertexShader, fragmentShader; // All sub-shaders
+	std::string source;
 
 
 	// Constructors & destructors
@@ -39,8 +45,10 @@ public:
 	// Methods
 	GLint CompileShadersFromFolder(const std::string& Folder);
 	GLint LinkShaders();
+	GLint Recompile();
 	void Bind();
-	void Unbind();
+	void Destroy();
+	static void Cleanup();
 
 
 	// Setters
@@ -48,6 +56,7 @@ public:
 	void SetInt(const GLchar* Name, const GLint& Value) const;
 	void SetFloat(const GLchar* Name, const GLfloat& Value) const;
 	void SetVec3(const GLchar* Name, const glm::vec3& Value) const;
+	void SetVec4(const GLchar* Name, const glm::vec4& Value) const;
 	void SetMatrix4x4(const GLchar* Name, const glm::mat4& Value) const;
 	//void SetTextureSampler(const GLchar* Name, const Texture& Tex) const;
 
@@ -63,5 +72,6 @@ public:
 	// Getters
 	GLint GetUniformLocation(const GLchar* Name) const;
 	static Shader* GetCurrent();
+	static void Unbind(); // Call at the end of the render thread
 };
 

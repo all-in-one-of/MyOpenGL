@@ -97,13 +97,20 @@ void Primitive::Construct()
 
 void Primitive::Draw(const glm::mat4& Transform)
 {
+	// Draw mesh section
+	if (material != nullptr) // If we have a material assigned
+		material->Bind();	 // Then bind that material, will bind the necessary shader
+
+
 	Shader* shaderProgram = Shader::GetCurrent();
 	if (shaderProgram != nullptr && shaderProgram->IsValid())
 	{
+		// Set uniforms specific to this mesh
 		shaderProgram->SetModelMatrix(Transform);
 		shaderProgram->SetVec3("MinBounds", minBounds);
 		shaderProgram->SetVec3("MaxBounds", maxBounds);
 	}
+
 
 	// render container
 	glBindVertexArray(VAO);

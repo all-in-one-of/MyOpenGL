@@ -64,9 +64,7 @@ void EditorInput(const float& DeltaTime)
 	else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_R) == GLFW_PRESS) // HOT RECOMPILE
 	{
 		std::cout << "SHADERS HOT RECOMPILE" << std::endl;
-		shaderProgram.CompileShadersFromFolder(shadersDir);
-		shaderProgram.LinkShaders();
-		shaderProgram.Bind();
+		shaderProgram.Recompile();
 		shaderProgram.SetInt("tex", 0);
 		shaderProgram.SetInt("tex2", 1);
 	}
@@ -128,12 +126,16 @@ int main(int argc, char* argv[])
 
 	// ===================================== VAO & VBO ============================================
 	
+	Material checkerMaterial(&shaderProgram);
+	checkerMaterial.name = "Checker_MI";
+
 	Mesh box;
 	box.LoadMeshObj("../Content/Box_SM.obj");
 	box.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
 	box.transform.position = glm::vec3(-5.0f, 0.0f, 0.0f);
 	Mesh sphere;
 	sphere.LoadMeshObj("../Content/MaterialTest_SM.obj");
+	sphere.material = &checkerMaterial;
 	//sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
 
@@ -219,6 +221,8 @@ int main(int argc, char* argv[])
 	// ===================================== MAIN THREAD ============================================
 
 	window.Bind();
+	camera.Bind();
+
 	while( !glfwWindowShouldClose(Window::GetCurrent()) ) // While window is open
 	{
 		// Delta & elapsed time
@@ -256,10 +260,9 @@ int main(int argc, char* argv[])
 
 
 		// Bind shader program
-		shaderProgram.Bind();
-		shaderProgram.SetFloat("ElapsedTime", elapsedTime);
-
-		camera.Bind();
+		//shaderProgram.Bind();
+		//shaderProgram.SetFloat("ElapsedTime", elapsedTime); // Move me into shader callback
+		//camera.Draw();
 
 		//Draw meshes
 		//box.Draw();
@@ -274,10 +277,14 @@ int main(int argc, char* argv[])
 			transform = glm::translate(transform, positions[i]);
 			prim.Draw(prim.transform.GetMatrix() * transform);
 		}*/
-		
+
 
 		// Check events to call & swap buffers
 		window.SwapBuffers();
+
+		// Safely unbind last shader
+		Shader::Unbind();
+
 		glfwPollEvents(); // Check if any events (i.e. inputs) have been triggered
 	}
 
@@ -289,6 +296,7 @@ int main(int argc, char* argv[])
 	prim.Destroy();
 	plane.Destroy();
 
+	Shader::Cleanup();
 	glfwTerminate(); // Clean up GLFW context
 	return 0; // Return success code
 }

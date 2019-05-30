@@ -2,19 +2,33 @@
 
 Shader* Shader::current = nullptr;
 
+void Shader::Cleanup()
+{
+	/*for (int i = Shader::all.size() - 1; i >= 0 ; i--)
+		Shader::all[i]->Destroy();*/
+}
+
+void Shader::Create()
+{
+	//all.push_back(this);
+	//all.emplace_back(this);
+}
+
 Shader::Shader()
 {
-
+	Create();
 }
 
 Shader::Shader(const std::string & Folder)
 {
+	Create();
 	CompileShadersFromFolder(Folder);
 }
 
 
 Shader::~Shader()
 {
+	Destroy();
 }
 
 GLint Shader::CompileShadersFromFolder(const std::string & Folder)
@@ -26,6 +40,8 @@ GLint Shader::CompileShadersFromFolder(const std::string & Folder)
 	success = vertexShader.CompileFile(Folder + "/Vertex.glsl") && success;
 	fragmentShader = SubShader(GL_FRAGMENT_SHADER);
 	success = fragmentShader.CompileFile(Folder + "/Fragment.glsl") && success;
+
+	source = Folder;
 
 	return success;
 }
@@ -56,15 +72,40 @@ GLint Shader::LinkShaders()
 	return success;
 }
 
-void Shader::Bind()
+GLint Shader::Recompile()
 {
-	glUseProgram(ID);
-	current = this;
+	GLint success = 1;
+	if (!source.empty())
+	{
+		success = success && CompileShadersFromFolder(source);
+
+		LinkShaders();
+		Bind();
+	}
+
+	return success;
 }
 
-void Shader::Unbind()
+void Shader::Bind()
 {
-	glUseProgram(-1);
+	if (current != nullptr)
+		Unbind();
+
+
+	glUseProgram(ID);
+	current = this;
+
+	Camera* camera = Camera::GetCurrent();
+	if (camera != nullptr)
+		camera->Draw(); // Bind the view matrices
+}
+
+void Shader::Destroy()
+{
+	Unbind();
+	/*std::vector<Shader*>::iterator pos = std::find(Shader::all.begin(), Shader::all.end(), this);
+	if (pos != Shader::all.end())
+		Shader::all.erase(pos);*/
 }
 
 void Shader::SetBool(const GLchar* Name, const GLboolean& Value) const
@@ -85,6 +126,11 @@ void Shader::SetFloat(const GLchar * Name, const GLfloat& Value) const
 void Shader::SetVec3(const GLchar * Name, const glm::vec3 & Value) const
 {
 	glUniform3f(GetUniformLocation(Name), Value.x, Value.y, Value.z);
+}
+
+void Shader::SetVec4(const GLchar * Name, const glm::vec4 & Value) const
+{
+	glUniform4f(GetUniformLocation(Name), Value.x, Value.y, Value.z, Value.w);
 }
 
 void Shader::SetMatrix4x4(const GLchar * Name, const glm::mat4& Value) const
@@ -128,4 +174,12 @@ GLint Shader::GetUniformLocation(const GLchar* Name) const
 Shader * Shader::GetCurrent()
 {
 	return current;
+}
+
+void Shader::Unbind()
+{
+	if (current != nullptr)
+		current = nullptr; // Clear pointer
+
+	glUseProgram(-1); // Unbind from OpenGL
 }

@@ -10,6 +10,7 @@ class Camera : public Object
 {
 private:
 	void UpdateRotation();
+	static Camera* current;
 
 public:
 	// Properties
@@ -29,6 +30,7 @@ public:
 	
 	// Methods
 	void Bind();
+	void Draw(); // Tell shader program to pass through the view matrices
 	void LookAt(const glm::vec3& Target);
 
 
@@ -38,5 +40,6 @@ public:
 	glm::vec3 GetUp();
 	glm::mat4 GetProjectionMatrix() const;
 	glm::mat4 GetViewMatrix();
+	static Camera* GetCurrent();
 };
 

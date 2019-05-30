@@ -2,7 +2,7 @@
 
 #include "Transform.h"
 #include "Object.h"
-#include "Shader.h"
+#include "Material.h"
 
 #include <vector>
 
@@ -43,11 +43,13 @@ public:
 	Transform transform;
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
+	Material* material; // We will change this to be stored in mesh sections
 	enum DrawMode : GLuint
 	{
 		DrawElements = 0,
 		DrawArrays = 1
 	} drawMode = DrawMode::DrawElements;
+
 
 	// Constructors & destructors
 	Primitive();

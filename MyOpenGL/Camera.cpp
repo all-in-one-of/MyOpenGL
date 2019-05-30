@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-
+Camera* Camera::current = nullptr;
 
 void Camera::UpdateRotation()
 {
@@ -17,6 +17,11 @@ Camera::~Camera()
 }
 
 void Camera::Bind()
+{
+	Camera::current = this; // Point to this camera to draw with
+}
+
+void Camera::Draw()
 {
 	Shader* shaderProgram = Shader::GetCurrent();
 	if (shaderProgram != nullptr && shaderProgram->IsValid())
@@ -82,4 +87,9 @@ glm::mat4 Camera::GetViewMatrix()
 {
 	UpdateRotation();
 	return glm::lookAt(transform.position, transform.position - transform.GetForward(), transform.GetUp()); // Always face opposite direction of forward vec
+}
+
+Camera * Camera::GetCurrent()
+{
+	return Camera::current;
 }
