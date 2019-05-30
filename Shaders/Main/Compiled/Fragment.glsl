@@ -15,15 +15,26 @@ in vec3 WorldPosition;
 
 
 
+uniform vec3 MinBounds;
+uniform vec3 MaxBounds;
+vec3 Size = MaxBounds - MinBounds;
 uniform vec3 CameraPosition;
 uniform vec3 CameraDirection;
 uniform float ElapsedTime;
+
 
 
 #define PI 3.14159265359
 #define INV_PI 0.31830988618
 #define DEG_TO_RAD 0.0174533
 #define RAD_TO_DEG 57.2958
+
+
+
+vec3 GetLocalUVW(vec3 LocalPosition)
+{
+	return (LocalPosition - MinBounds) / Size;
+}
 
 
 uniform sampler2D tex;
@@ -205,9 +216,12 @@ void main()
 	vec4 t = texture(tex, TexCoord.xy);
 	vec4 t2 = texture(tex2, TexCoord.xy);
 	
+	vec3 localUVW = GetLocalUVW(LocalPosition);
+	
 	material.Albedo = vec3(mix(t, t2, t2.a));
-	material.Metalness = 1.0f;
-	material.Roughness = 0.3f;
+	material.Albedo = vec3(1.0f, 0.0f, 0.0f);
+	material.Metalness = localUVW.x;
+	material.Roughness = localUVW.z;
 	material.AmbientOcclusion = 1.0f;
 	
 	
@@ -226,12 +240,12 @@ void main()
 		-sinAngle, 0.0f, cosAngle, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f
 	);
-	
+	dirLight.Direction = vec3(rot * vec4(dirLight.Direction, 1.0f));
 	Lo += CalculateDirectionalLight(dirLight);
 	
 	PointLight pointLight;
-	pointLight.Radiance = vec3(1.0f);
-	
+	pointLight.Radiance = vec3(3.142f * 2.0f);
+	pointLight.Position = vec3(0.0f, sin(ElapsedTime * 2.0f) * 1.5f, 0.0f);
 	
 	
 	/*SpotLight spotLight;
@@ -250,7 +264,6 @@ void main()
 	colour = pow(colour, vec3(1.0f / 2.2f));
 
 	FragColour = vec4(colour, 1.0f);
-	
 	
 	
 	

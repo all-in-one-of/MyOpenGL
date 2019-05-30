@@ -101,6 +101,8 @@ void Primitive::Draw(const glm::mat4& Transform)
 	if (shaderProgram != nullptr && shaderProgram->IsValid())
 	{
 		shaderProgram->SetModelMatrix(Transform);
+		shaderProgram->SetVec3("MinBounds", minBounds);
+		shaderProgram->SetVec3("MaxBounds", maxBounds);
 	}
 
 	// render container

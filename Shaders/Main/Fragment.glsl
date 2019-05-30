@@ -35,9 +35,12 @@ void main()
 	vec4 t = texture(tex, TexCoord.xy);
 	vec4 t2 = texture(tex2, TexCoord.xy);
 	
+	vec3 localUVW = GetLocalUVW(LocalPosition);
+	
 	material.Albedo = vec3(mix(t, t2, t2.a));
-	material.Metalness = 1.0f;
-	material.Roughness = 0.3f;
+	material.Albedo = vec3(1.0f, 0.0f, 0.0f);
+	material.Metalness = localUVW.x;
+	material.Roughness = localUVW.z;
 	material.AmbientOcclusion = 1.0f;
 	
 	
@@ -56,12 +59,12 @@ void main()
 		-sinAngle, 0.0f, cosAngle, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f
 	);
-	//dirLight.Direction = vec3(rot * vec4(dirLight.Direction, 1.0f));
+	dirLight.Direction = vec3(rot * vec4(dirLight.Direction, 1.0f));
 	Lo += CalculateDirectionalLight(dirLight);
 	
 	PointLight pointLight;
-	pointLight.Radiance = vec3(1.0f);
-	//pointLight.Position = vec3(0.0f, abs(sin(ElapsedTime * 1.5f)) * 2.5f, 0.0f);
+	pointLight.Radiance = vec3(3.142f * 2.0f);
+	pointLight.Position = vec3(0.0f, sin(ElapsedTime * 2.0f) * 1.5f, 0.0f);
 	//Lo += CalculatePointLight(pointLight);
 	
 	/*SpotLight spotLight;
@@ -80,7 +83,6 @@ void main()
 	colour = pow(colour, vec3(1.0f / 2.2f));
 
 	FragColour = vec4(colour, 1.0f);
-	
 	
 	//FragColour = vec4(ViewDirection, 1.0f);
 	//FragColour = vec4(max(dot(ViewDirection, PixelNormal), 0.0f));
