@@ -93,6 +93,8 @@ void Primitive::Construct()
 	AddAttribute(2); // TexCoord
 	AddAttribute(3); // Colour
 	AddAttribute(4, GL_TRUE); // Normal
+
+	CalculateBounds();
 }
 
 void Primitive::Draw(const glm::mat4& Transform)
@@ -175,6 +177,37 @@ void Primitive::RemoveIsolatedVertices()
 {
 }
 
+void Primitive::CalculateBounds()
+{
+	glm::vec3 min, max;
+	GLboolean first = GL_TRUE;
+
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		if (first)
+		{
+			min = vertices[i].position;
+			max = vertices[i].position;
+			first = GL_FALSE;
+		}
+		else
+		{
+			glm::vec3 p = vertices[i].position;
+
+			min.x = std::min(p.x, min.x);
+			min.y = std::min(p.y, min.y);
+			min.y = std::min(p.z, min.z);
+
+			max.x = std::max(p.x, max.x);
+			max.y = std::max(p.y, max.y);
+			max.y = std::max(p.z, max.z);
+		}
+	}
+
+	minBounds = min;
+	maxBounds = max;
+}
+
 void Primitive::AddVertex(const Vertex & NewVertex)
 {
 	vertices.push_back(NewVertex);
@@ -199,4 +232,14 @@ GLuint Primitive::GetVAO() const
 GLuint Primitive::GetEBO() const
 {
 	return EBO;
+}
+
+glm::vec3 Primitive::GetMinBounds() const
+{
+	return minBounds;
+}
+
+glm::vec3 Primitive::GetMaxBounds() const
+{
+	return maxBounds;
 }

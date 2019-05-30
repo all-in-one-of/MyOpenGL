@@ -72,16 +72,20 @@ GLint Shader::LinkShaders()
 	return success;
 }
 
+GLint Shader::Compile(const std::string & Folder)
+{
+	GLint success = 1;
+	success = success && CompileShadersFromFolder(Folder);
+	LinkShaders();
+
+	return success;
+}
+
 GLint Shader::Recompile()
 {
 	GLint success = 1;
 	if (!source.empty())
-	{
-		success = success && CompileShadersFromFolder(source);
-
-		LinkShaders();
-		Bind();
-	}
+		success = success && Compile(source);
 
 	return success;
 }

@@ -21,8 +21,7 @@ const GLuint SRC_WIDTH = 1280;
 const GLuint SRC_HEIGHT = 720;
 Window window;
 EditorCamera camera;
-std::string shadersDir = "../Shaders/Main";
-Shader shaderProgram;
+Shader shaderProgram, unlitShader;
 
 double elapsedTime = 0.0f, deltaTime = 0.0f;
 
@@ -67,6 +66,7 @@ void EditorInput(const float& DeltaTime)
 		shaderProgram.Recompile();
 		shaderProgram.SetInt("tex", 0);
 		shaderProgram.SetInt("tex2", 1);
+		unlitShader.Recompile();
 	}
 }
 
@@ -107,11 +107,15 @@ int main(int argc, char* argv[])
 	//camera.transform.rotation = glm::quat(glm::vec3(0.0f, glm::radians(180.0f), 0.0));
 
 
-	// ===================================== SHADERS ============================================
+	// ===================================== SHADERS & MATERIALS ============================================
 
-	shaderProgram.CompileShadersFromFolder(shadersDir);
-	shaderProgram.LinkShaders();
+	shaderProgram.Compile("../Shaders/Main");
+	unlitShader.Compile("../Shaders/Unlit");
 
+	Material unlitMaterial(&unlitShader);
+	Material checkerMaterial(&shaderProgram);
+	checkerMaterial.name = "Checker_MI";
+	
 
 	// ===================================== TEXTURES ============================================
 
@@ -126,13 +130,11 @@ int main(int argc, char* argv[])
 
 	// ===================================== VAO & VBO ============================================
 	
-	Material checkerMaterial(&shaderProgram);
-	checkerMaterial.name = "Checker_MI";
-
 	Mesh box;
 	box.LoadMeshObj("../Content/Box_SM.obj");
 	box.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
 	box.transform.position = glm::vec3(-5.0f, 0.0f, 0.0f);
+	box.material = &unlitMaterial;
 	Mesh sphere;
 	sphere.LoadMeshObj("../Content/MaterialTest_SM.obj");
 	sphere.material = &checkerMaterial;
@@ -152,9 +154,11 @@ int main(int argc, char* argv[])
 	plane.Construct();
 	plane.transform.scale = glm::vec3(3.0f);
 	plane.transform.position = glm::vec3(0.0f, -.35f, 0.0f);
+	plane.material = &unlitMaterial;
 
 
 	Primitive prim;
+	prim.material = &checkerMaterial;
 
 	// Geometry
 	// Front face
@@ -265,18 +269,18 @@ int main(int argc, char* argv[])
 		//camera.Draw();
 
 		//Draw meshes
-		//box.Draw();
+		box.Draw();
 		sphere.Draw();
-		//plane.Draw();
+		plane.Draw();
 		
-		/*
+		
 		prim.Draw();
 		for (int i = 0; i < positions.size(); i++)
 		{
 			glm::mat4 transform = glm::mat4(1.0f); // Identity
 			transform = glm::translate(transform, positions[i]);
 			prim.Draw(prim.transform.GetMatrix() * transform);
-		}*/
+		}
 
 
 		// Check events to call & swap buffers

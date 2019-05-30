@@ -64,7 +64,7 @@ public:
 	void WeldAllVertices();
 	void WeldVertices(const std::vector<int>& Indices);
 	void RemoveIsolatedVertices();
-	//void CalculateBounds(); // IMPLMENT ME
+	void CalculateBounds(); // IMPLMENT ME
 
 
 	// Setters
@@ -76,5 +76,7 @@ public:
 	GLuint GetVBO() const;
 	GLuint GetVAO() const;
 	GLuint GetEBO() const;
+	glm::vec3 GetMinBounds() const;
+	glm::vec3 GetMaxBounds() const;
 };
 

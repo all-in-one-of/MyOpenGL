@@ -45,6 +45,7 @@ public:
 	// Methods
 	GLint CompileShadersFromFolder(const std::string& Folder);
 	GLint LinkShaders();
+	GLint Compile(const std::string& Folder);
 	GLint Recompile();
 	void Bind();
 	void Destroy();

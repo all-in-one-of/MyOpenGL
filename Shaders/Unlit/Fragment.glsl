@@ -29,7 +29,8 @@ vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
 
 void main()
 {
-	vec3 colour = Material.Albedo;
+	material.Albedo = vec3(.8f);
+	vec3 colour = material.Albedo;
 	
 	// Gamma tonemapping
 	colour = colour / (colour + vec3(1.0f));
