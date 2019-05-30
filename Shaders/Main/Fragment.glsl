@@ -12,17 +12,11 @@ in vec3 WorldPosition;
 
 
 // Uniforms
-uniform vec3 CameraPosition;
-uniform vec3 CameraDirection;
-uniform float ElapsedTime;
+#include "../Common.glsl"
 
 // Samplers
 uniform sampler2D tex;
 uniform sampler2D tex2;
-
-// Constants
-#define PI = 3.142
-#define DEG_TO_RAD 0.0174533
 
 
 vec3 PixelNormal = VertexNormal;

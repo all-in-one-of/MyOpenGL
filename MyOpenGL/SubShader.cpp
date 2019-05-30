@@ -10,7 +10,7 @@ void SubShader::RemoveComments(std::string& SourceLine)
 
 void SubShader::RemoveCompilerDirective(std::string & SourceLine)
 {
-	SourceLine = SourceLine.substr(0, SourceLine.find("#")); // Remove version directive
+	SourceLine = SourceLine.substr(0, SourceLine.find("#version")); // Remove version directive
 }
 
 
@@ -22,10 +22,6 @@ std::string SubShader::GetSource(const std::string& File, const bool& OutputCons
 
 	if (inFile.is_open()) // If open
 	{
-		/*std::stringstream strStream; // Stream to output to
-		strStream << inFile.rdbuf(); // Output file contents to stream
-		source = strStream.str();	 // Get string from stream*/
-
 		std::vector<std::string> includes;							  // List of files we've already included
 		std::string path = std::filesystem::canonical(File).string(); // Get absolute (canonical) path of the shader file
 		path = path.substr(0, path.find_last_of("\\"));				  // Remove filename to get absolute path
