@@ -5,13 +5,23 @@
 
 #include "Object.h"
 
+#include <sstream>
+#include <filesystem>
+
+
 class SubShader : public Object
 {
+private:
+	static void RemoveComments(std::string& SourceLine);
+	static void RemoveCompilerDirective(std::string& SourceLine);
+
+
 protected:
 	GLenum shaderType = GL_FRAGMENT_SHADER;
 
+
 public:
-	static std::string GetSource(std::string File);
+	static std::string GetSource(const std::string& File, const bool& OutputConsolidatedFile = true);
 
 
 	SubShader();

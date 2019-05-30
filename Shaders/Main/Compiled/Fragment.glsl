@@ -1,7 +1,7 @@
 #version 330 core
-out vec4 FragColour; // Output
+out vec4 FragColour; 
 
-// Inputs marshalled through vertex shader
+
 in vec2 TexCoord;
 in vec3 VertexColour;
 in vec3 VertexNormal;
@@ -11,16 +11,16 @@ in vec3 LocalPosition;
 in vec3 WorldPosition;
 
 
-// Uniforms
+
 uniform vec3 CameraPosition;
 uniform vec3 CameraDirection;
 uniform float ElapsedTime;
 
-// Samplers
+
 uniform sampler2D tex;
 uniform sampler2D tex2;
 
-// Constants
+
 #define PI = 3.142
 #define DEG_TO_RAD 0.0174533
 
@@ -28,7 +28,7 @@ uniform sampler2D tex2;
 vec3 PixelNormal = VertexNormal;
 vec3 ViewDirection = -normalize(CameraPosition - WorldPosition);
 
-// ========================================= Materials =============================================
+
 
 struct Material
 {
@@ -38,25 +38,95 @@ struct Material
 } material;
 
 
-// ========================================= Lights =============================================
-
-#include "../Lights.glsl"
 
 
-// ========================================= MAIN RENDER =============================================
+
+
+
+
+struct DirectionalLight
+{
+	vec3 Direction;
+	vec3 Radiance;
+};
+
+vec3 BlinnPhong(vec3 Direction, vec3 Radiance)
+{
+	
+	vec3 L = normalize(Direction);
+	vec3 N = normalize(PixelNormal);
+	vec3 V = normalize(ViewDirection);
+	
+	
+	float NoV = max( dot(N, -L), 0.0f );
+	vec3 diffuse = vec3(NoV) * Radiance * material.Albedo;
+	
+	
+	vec3 reflectDir = reflect(-L, N);
+	vec3 specular = pow( max(dot(V, reflectDir), 0.0f), 128.0f) * Radiance * 0.5f * material.Reflectance;
+	
+	return diffuse + specular;
+}
+
+vec3 CalculateDirectionalLight(DirectionalLight Light)
+{
+	return BlinnPhong(Light.Direction, Light.Radiance);
+}
+
+struct PointLight
+{
+	vec3 Position;
+	vec3 Radiance;
+};
+
+vec3 CalculatePointLight(PointLight Light)
+{
+	vec3 dir = WorldPosition - Light.Position;
+	float distance = length(dir);
+	float attenuation = 1.0f / (distance*distance); 
+	
+	return BlinnPhong(dir, Light.Radiance * attenuation);
+}
+
+struct SpotLight
+{
+	vec3 Position;
+	vec3 Direction;
+	vec3 Radiance;
+	float CosAngle;
+};
+
+vec3 CalculateSpotLight(SpotLight Light)
+{
+	vec3 dir = WorldPosition - Light.Position;
+	vec3 L = normalize(-Light.Direction);
+	
+	float cosTheta = dot(normalize(dir), L);
+	if (cosTheta > Light.CosAngle)
+	{
+		float distance = length(dir);
+		float attenuation = 1.0f / (distance*distance); 
+		return BlinnPhong(normalize(dir), Light.Radiance * attenuation);
+	}
+	else
+		return vec3(0.0f);
+}
+
+
+
 
 void main()
 {
-	// Materials
+	
 	vec4 t = texture(tex, TexCoord.xy);
 	vec4 t2 = texture(tex2, TexCoord.xy);
 	material.Albedo = vec3(mix(t, t2, t2.a));
-	material.Reflectance = vec3(0.5f); // 4% reflectance
+	material.Reflectance = vec3(0.5f); 
 	material.Ambient = vec3(.05f);
 	
 	vec3 result;
 	
-	// Lights
+	
 	DirectionalLight dirLight;
 	dirLight.Radiance = vec3(1.0f);
 	dirLight.Direction = normalize(vec3(-.333f, -.3333f, -.333f));
@@ -70,7 +140,7 @@ void main()
 		0.0f, 0.0f, 0.0f, 1.0f
 	);
 	dirLight.Direction = vec3(rot * vec4(dirLight.Direction, 1.0f));
-	//result += CalculateDirectionalLight(dirLight);
+	
 	
 	PointLight pointLight;
 	pointLight.Radiance = vec3(1.0f);
@@ -89,6 +159,6 @@ void main()
 	FragColour = vec4(result, 1.0f);
 	
 	
-	//FragColour = vec4(ViewDirection, 1.0f);
-	//FragColour = vec4(max(dot(ViewDirection, PixelNormal), 0.0f));
+	
+	
 } 

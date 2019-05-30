@@ -156,10 +156,19 @@ void Mesh::LoadMeshObj(const std::string & File)
 					//std::cout << "Max Bounds: " << glm::to_string(maxBounds) << std::endl;
 				}
 			}
+			else if (tokens[0] == "f") // End of geometry, start pairing up vertices
+			{
+				VertexFromIndex(tokens[1]);
+				VertexFromIndex(tokens[2]);
+				VertexFromIndex(tokens[3]);
+
+				//if (tokens.size() > 4) // Quad, size includes f token
+				//	VertexFromIndex(tokens[4]);
+			}
 		}
 
 
-		// Parse file again after we've construced geometry. This is safer to avoid invalid accessing of memory.
+		/*// Parse file again after we've construced geometry. This is safer to avoid invalid accessing of memory.
 		inFile.clear(); // Clear stream
 		inFile.seekg(0, std::ios::beg); // Reset
 		while (std::getline(inFile, line))
@@ -176,7 +185,7 @@ void Mesh::LoadMeshObj(const std::string & File)
 				//if (tokens.size() > 4) // Quad, size includes f token
 				//	VertexFromIndex(tokens[4]);
 			}
-		}
+		}*/
 
 		std::cout << "Mesh successfully loaded: '" << File << "'\n";
 	}
@@ -184,6 +193,10 @@ void Mesh::LoadMeshObj(const std::string & File)
 		std::cout << "Error: Mesh failed to load: '" << File << "'\n";
 
 	inFile.close();
-	WeldAllVertices(); // Optimise
+
+	// Optimise mesh
+	WeldAllVertices();
+	RemoveIsolatedVertices();
+
 	Construct();
 }

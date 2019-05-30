@@ -162,6 +162,10 @@ void Primitive::WeldVertices(const std::vector<int>& Indices)
 
 }
 
+void Primitive::RemoveIsolatedVertices()
+{
+}
+
 void Primitive::AddVertex(const Vertex & NewVertex)
 {
 	vertices.push_back(NewVertex);

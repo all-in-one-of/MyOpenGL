@@ -61,6 +61,7 @@ public:
 	void Destroy();
 	void WeldAllVertices();
 	void WeldVertices(const std::vector<int>& Indices);
+	void RemoveIsolatedVertices();
 	//void CalculateBounds(); // IMPLMENT ME
 
 

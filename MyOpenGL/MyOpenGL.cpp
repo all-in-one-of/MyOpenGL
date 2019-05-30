@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
 	box.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
 	box.transform.position = glm::vec3(-5.0f, 0.0f, 0.0f);
 	Mesh sphere;
-	sphere.LoadMeshObj("../Content/Sphere_SM.obj");
+	//sphere.LoadMeshObj("../Content/Sphere_SM.obj");
 	sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
 
