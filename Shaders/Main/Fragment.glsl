@@ -27,6 +27,11 @@ vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
 #include "../Lights.glsl"
 
 
+// ========================================= LIGHTS =============================================
+
+#define NUM_OF_LIGHTS 4
+PointLight lights[NUM_OF_LIGHTS];
+
 // ========================================= MAIN RENDER =============================================
 
 void main()
@@ -60,19 +65,29 @@ void main()
 		0.0f, 0.0f, 0.0f, 1.0f
 	);
 	dirLight.Direction = vec3(rot * vec4(dirLight.Direction, 1.0f));
-	Lo += CalculateDirectionalLight(dirLight);
+	//Lo += CalculateDirectionalLight(dirLight);
 	
 	PointLight pointLight;
 	pointLight.Radiance = vec3(3.142f * 2.0f);
 	pointLight.Position = vec3(0.0f, sin(ElapsedTime * 2.0f) * 1.5f, 0.0f);
 	//Lo += CalculatePointLight(pointLight);
 	
-	/*SpotLight spotLight;
-	spotLight.Radiance = vec3(4.0f);
-	spotLight.Position = vec3(0.5f, 1.0f, 4.0f);
+	for (int i = 0; i < NUM_OF_LIGHTS; i++)
+	{
+		float a = float(i) / float(NUM_OF_LIGHTS);
+		a *= 2.0f * PI;
+		const float freq = 5.0f;
+		lights[i].Radiance = vec3(20.0f);
+		lights[i].Position = vec3(sin(a) * freq, 5.0f, cos(a) * freq);
+		Lo += CalculatePointLight(lights[i]);
+	}
+	
+	SpotLight spotLight;
+	spotLight.Radiance = vec3(32.0f);
+	spotLight.Position = vec3(0.0f, 2.5f, 10.0f);
 	spotLight.Direction = vec3(0.0f, .3333f, 1.0f);
 	spotLight.CosAngle = cos(12.5 * DEG_TO_RAD);
-	Lo += CalculateSpotLight(spotLight);*/
+	//Lo += CalculateSpotLight(spotLight);
 	
 
 	vec3 ambient = vec3(0.005f) * material.Albedo * material.AmbientOcclusion; // Apply ambient lighting

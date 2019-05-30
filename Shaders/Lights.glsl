@@ -103,7 +103,7 @@ vec3 CalculateSpotLight(SpotLight Light)
 		float distance = length(dir);
 		float attenuation = 1.0f / (distance*distance); // Inverse squared attenuations
 		//return BlinnPhong(normalize(dir), Light.Radiance * attenuation);
-		return CalculateRadiance(PixelNormal, ViewDirection, normalize(dir), Light.Radiance * attenuation, material);
+		return CalculateRadiance(PixelNormal, ViewDirection, dir, Light.Radiance * attenuation, material);
 	}
 	else
 		return vec3(0.0f);
