@@ -131,7 +131,7 @@ vec3 BlinnPhong(vec3 Direction, vec3 Radiance)
 vec3 CalculateRadiance(vec3 N, vec3 V, vec3 L, vec3 Radiance, Material Mat)
 {
 	
-	L = -L;
+	L = -normalize(L);
 	vec3 H = normalize(V + L); 
 	float NoV = max(dot(N, V), 0.0f);
 	float NoL = max(dot(N, L), 0.0f);
@@ -157,7 +157,7 @@ vec3 CalculateRadiance(vec3 N, vec3 V, vec3 L, vec3 Radiance, Material Mat)
 	float denominator = 4.0f * NoV * NoL;
 	vec3 specular = numerator / max(denominator, 0.001f); 
 	
-	vec3 Lo = (kD * Mat.Albedo / PI + specular) * Radiance * NoL;
+	vec3 Lo = ((kD * Mat.Albedo / PI) + specular) * Radiance * NoL;
 	return Lo;
 }
 
@@ -201,7 +201,8 @@ vec3 CalculateSpotLight(SpotLight Light)
 	{
 		float distance = length(dir);
 		float attenuation = 1.0f / (distance*distance); 
-		return BlinnPhong(normalize(dir), Light.Radiance * attenuation);
+		
+		return CalculateRadiance(PixelNormal, ViewDirection, normalize(dir), Light.Radiance * attenuation, material);
 	}
 	else
 		return vec3(0.0f);
