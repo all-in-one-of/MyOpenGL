@@ -19,21 +19,11 @@ uniform sampler2D tex;
 uniform sampler2D tex2;
 
 
-vec3 PixelNormal = VertexNormal;
-vec3 ViewDirection = -normalize(CameraPosition - WorldPosition);
+vec3 PixelNormal = normalize(VertexNormal); // Not always correctly normalized from vertex->fragment interpolation
+vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
 
-// ========================================= Materials =============================================
-
-struct Material
-{
-	vec3 Albedo;
-	vec3 Reflectance;
-	vec3 Ambient;
-} material;
-
-
-// ========================================= Lights =============================================
-
+#include "../Material.glsl"
+#include "../BRDFs.glsl"
 #include "../Lights.glsl"
 
 
@@ -44,11 +34,14 @@ void main()
 	// Materials
 	vec4 t = texture(tex, TexCoord.xy);
 	vec4 t2 = texture(tex2, TexCoord.xy);
-	material.Albedo = vec3(mix(t, t2, t2.a));
-	material.Reflectance = vec3(0.5f); // 4% reflectance
-	material.Ambient = vec3(.05f);
 	
-	vec3 result;
+	material.Albedo = vec3(mix(t, t2, t2.a));
+	material.Metalness = 1.0f;
+	material.Roughness = 0.3f;
+	material.AmbientOcclusion = 1.0f;
+	
+	
+	vec3 Lo = vec3(0.0f); // Lobe
 	
 	// Lights
 	DirectionalLight dirLight;
@@ -63,24 +56,30 @@ void main()
 		-sinAngle, 0.0f, cosAngle, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f
 	);
-	dirLight.Direction = vec3(rot * vec4(dirLight.Direction, 1.0f));
-	//result += CalculateDirectionalLight(dirLight);
+	//dirLight.Direction = vec3(rot * vec4(dirLight.Direction, 1.0f));
+	Lo += CalculateDirectionalLight(dirLight);
 	
 	PointLight pointLight;
 	pointLight.Radiance = vec3(1.0f);
-	pointLight.Position = vec3(0.0f, sin(ElapsedTime * 1.5f) * 2.5f, 0.0f);
-	result += CalculatePointLight(pointLight);
+	//pointLight.Position = vec3(0.0f, abs(sin(ElapsedTime * 1.5f)) * 2.5f, 0.0f);
+	//Lo += CalculatePointLight(pointLight);
 	
-	SpotLight spotLight;
+	/*SpotLight spotLight;
 	spotLight.Radiance = vec3(4.0f);
 	spotLight.Position = vec3(0.5f, 1.0f, 4.0f);
 	spotLight.Direction = vec3(0.0f, .3333f, 1.0f);
 	spotLight.CosAngle = cos(12.5 * DEG_TO_RAD);
-	result += CalculateSpotLight(spotLight);
+	Lo += CalculateSpotLight(spotLight);*/
 	
+
+	vec3 ambient = vec3(0.005f) * material.Albedo * material.AmbientOcclusion; // Apply ambient lighting
+	vec3 colour = ambient + Lo;
 	
-	result += material.Ambient * material.Albedo;
-	FragColour = vec4(result, 1.0f);
+	// Gamma tonemapping
+	colour = colour / (colour + vec3(1.0f));
+	colour = pow(colour, vec3(1.0f / 2.2f));
+
+	FragColour = vec4(colour, 1.0f);
 	
 	
 	//FragColour = vec4(ViewDirection, 1.0f);

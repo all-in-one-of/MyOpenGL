@@ -12,31 +12,80 @@ in vec3 WorldPosition;
 
 
 
+
+
+
 uniform vec3 CameraPosition;
 uniform vec3 CameraDirection;
 uniform float ElapsedTime;
+
+
+#define PI 3.14159265359
+#define INV_PI 0.31830988618
+#define DEG_TO_RAD 0.0174533
+#define RAD_TO_DEG 57.2958
 
 
 uniform sampler2D tex;
 uniform sampler2D tex2;
 
 
-#define PI = 3.142
-#define DEG_TO_RAD 0.0174533
-
-
-vec3 PixelNormal = VertexNormal;
-vec3 ViewDirection = -normalize(CameraPosition - WorldPosition);
+vec3 PixelNormal = normalize(VertexNormal); 
+vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
 
 
 
 struct Material
 {
 	vec3 Albedo;
-	vec3 Reflectance;
-	vec3 Ambient;
+	float Metalness;
+	float Roughness;
+	float AmbientOcclusion;
 } material;
 
+
+
+
+
+float DistributionGGX(float NoH, float Roughness)
+{
+	float a = Roughness * Roughness;
+	float a2 = a * a;
+	float NoH2 = NoH * NoH;
+	
+	float num = a2;
+	
+	float denom = ( NoH * a2 - NoH ) * NoH + 1;	
+	denom = PI * denom * denom;
+	
+	return num / denom;
+}
+
+
+
+float GeometrySchlickGGX(float NoV, float Roughness)
+{
+	float r = Roughness + 1.0f;
+	float k = (r * r) / 8.0f;
+	
+	float num = NoV;
+	float denom = NoV * (1.0f - k) + k;
+	
+	return num / denom;
+}
+
+float GeometrySmith(float NoV, float NoL, float Roughness)
+{
+	float ggx2 = GeometrySchlickGGX(NoV, Roughness);
+	float ggx1 = GeometrySchlickGGX(NoL, Roughness);
+	
+	return ggx1 * ggx2;
+}
+
+vec3 FresnelSchlick(float CosTheta, vec3 F0, float Roughness)
+{
+	return F0 + (1.0f + F0) * pow(1.0f - CosTheta, 5.0f);
+}
 
 
 
@@ -63,14 +112,48 @@ vec3 BlinnPhong(vec3 Direction, vec3 Radiance)
 	
 	
 	vec3 reflectDir = reflect(-L, N);
-	vec3 specular = pow( max(dot(V, reflectDir), 0.0f), 128.0f) * Radiance * 0.5f * material.Reflectance;
+	vec3 specular = pow( max(dot(V, reflectDir), 0.0f), 128.0f) * Radiance * 0.5f;
 	
 	return diffuse + specular;
 }
 
+vec3 CalculateRadiance(vec3 N, vec3 V, vec3 L, vec3 Radiance, Material Mat)
+{
+	
+	L = -L;
+	vec3 H = normalize(V + L); 
+	float NoV = max(dot(N, V), 0.0f);
+	float NoL = max(dot(N, L), 0.0f);
+	float NoH = max(dot(N, H), 0.0f);
+	float HoV = max(dot(H, V), 0.0f);
+	
+	vec3 F0 = vec3(0.04f); 
+	F0 = mix(F0, Mat.Albedo, Mat.Metalness); 
+	
+	
+	
+	float NDF = DistributionGGX(NoH, Mat.Roughness);
+	float G = 	GeometrySmith(NoV, NoL, Mat.Roughness);
+	vec3  F =	FresnelSchlick(HoV, F0, Mat.Roughness);
+	
+	
+	vec3 kS = F;
+	vec3 kD = vec3(1.0f) - kS;
+	kD *= 1.0f - Mat.Metalness;
+	
+	
+	vec3 numerator = NDF * G * F;
+	float denominator = 4.0f * NoV * NoL;
+	vec3 specular = numerator / max(denominator, 0.001f); 
+	
+	vec3 Lo = (kD * Mat.Albedo / PI + specular) * Radiance * NoL;
+	return Lo;
+}
+
 vec3 CalculateDirectionalLight(DirectionalLight Light)
 {
-	return BlinnPhong(Light.Direction, Light.Radiance);
+	
+	return CalculateRadiance(PixelNormal, ViewDirection, Light.Direction, Light.Radiance, material);
 }
 
 struct PointLight
@@ -85,7 +168,8 @@ vec3 CalculatePointLight(PointLight Light)
 	float distance = length(dir);
 	float attenuation = 1.0f / (distance*distance); 
 	
-	return BlinnPhong(dir, Light.Radiance * attenuation);
+	
+	return CalculateRadiance(PixelNormal, ViewDirection, dir, Light.Radiance * attenuation, material);
 }
 
 struct SpotLight
@@ -120,11 +204,14 @@ void main()
 	
 	vec4 t = texture(tex, TexCoord.xy);
 	vec4 t2 = texture(tex2, TexCoord.xy);
-	material.Albedo = vec3(mix(t, t2, t2.a));
-	material.Reflectance = vec3(0.5f); 
-	material.Ambient = vec3(.05f);
 	
-	vec3 result;
+	material.Albedo = vec3(mix(t, t2, t2.a));
+	material.Metalness = 1.0f;
+	material.Roughness = 0.3f;
+	material.AmbientOcclusion = 1.0f;
+	
+	
+	vec3 Lo = vec3(0.0f); 
 	
 	
 	DirectionalLight dirLight;
@@ -139,24 +226,30 @@ void main()
 		-sinAngle, 0.0f, cosAngle, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f
 	);
-	dirLight.Direction = vec3(rot * vec4(dirLight.Direction, 1.0f));
 	
+	Lo += CalculateDirectionalLight(dirLight);
 	
 	PointLight pointLight;
 	pointLight.Radiance = vec3(1.0f);
-	pointLight.Position = vec3(0.0f, sin(ElapsedTime * 1.5f) * 2.5f, 0.0f);
-	result += CalculatePointLight(pointLight);
 	
-	SpotLight spotLight;
+	
+	
+	/*SpotLight spotLight;
 	spotLight.Radiance = vec3(4.0f);
 	spotLight.Position = vec3(0.5f, 1.0f, 4.0f);
 	spotLight.Direction = vec3(0.0f, .3333f, 1.0f);
 	spotLight.CosAngle = cos(12.5 * DEG_TO_RAD);
-	result += CalculateSpotLight(spotLight);
+	Lo += CalculateSpotLight(spotLight);*/
+	
+
+	vec3 ambient = vec3(0.005f) * material.Albedo * material.AmbientOcclusion; 
+	vec3 colour = ambient + Lo;
 	
 	
-	result += material.Ambient * material.Albedo;
-	FragColour = vec4(result, 1.0f);
+	colour = colour / (colour + vec3(1.0f));
+	colour = pow(colour, vec3(1.0f / 2.2f));
+
+	FragColour = vec4(colour, 1.0f);
 	
 	
 	

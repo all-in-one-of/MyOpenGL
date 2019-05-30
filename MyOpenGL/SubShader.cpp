@@ -25,14 +25,12 @@ std::string SubShader::GetSource(const std::string& File, const bool& OutputCons
 		std::vector<std::string> includes;							  // List of files we've already included
 		std::string path = std::filesystem::canonical(File).string(); // Get absolute (canonical) path of the shader file
 		path = path.substr(0, path.find_last_of("\\"));				  // Remove filename to get absolute path
-		std::cout << "path = " << path << std::endl;
 
 		// Isolate filename from directory
 		std::string filename;
 		std::size_t found = File.find_last_of("/");
 		if (found != std::string::npos)
 			filename = File.substr(found + 1);
-		std::cout << "filename = " << filename << std::endl;
 
 		// Parse file
 		std::string line;
