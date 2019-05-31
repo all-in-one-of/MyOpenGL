@@ -187,7 +187,7 @@ void Primitive::RemoveIsolatedVertices()
 
 void Primitive::CalculateBounds()
 {
-	glm::vec3 min, max;
+	glm::vec3 min = glm::vec3(0.0f), max = glm::vec3(0.0f);
 	GLboolean first = GL_TRUE;
 
 	for (int i = 0; i < vertices.size(); i++)

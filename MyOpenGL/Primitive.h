@@ -28,6 +28,11 @@ public:
 		Vertex(const glm::vec3& Position, const glm::vec2& TexCoord, const glm::vec3& Normal)
 			: position(Position), texCoord(TexCoord), normal(Normal) {};
 		~Vertex() {};
+
+		bool operator==(const Vertex& A)
+		{
+			return (position == A.position && texCoord == A.texCoord && normal == A.normal && colour == A.colour);
+		}
 	};
 
 

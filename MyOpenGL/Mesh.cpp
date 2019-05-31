@@ -110,7 +110,6 @@ void Mesh::LoadMeshObj(const std::string & File)
 
 			if (newIndices.size() > 0) // If we successfully decoded the token, then we add a vertex and point to it
 			{
-				indices.push_back(indices.size());
 				int index = 0;
 
 				// Iteratively add attributes. We can miss out attributes from the file by doing this which is safer.
@@ -122,7 +121,27 @@ void Mesh::LoadMeshObj(const std::string & File)
 				if (normals.size() > 0)
 					v.normal = normals[newIndices[index++] - 1];
 
-				vertices.push_back(v);
+				// Look to find if the vertex already exists
+				int found = -1;
+				for (unsigned int i = 0; i < vertices.size(); i++)
+				{
+					if (v == vertices[i])
+					{
+						found = i; // Doubles as our index
+						break;	   // Premature break, we got we needed
+					}
+				}
+
+				if (0 <= found) // If we found a vertex
+				{
+					indices.push_back(found);
+				}
+				else // Otherwise we add a new vertex and push back an index to the end
+				{
+					vertices.push_back(v);
+					//indices.push_back(indices.size());
+					indices.push_back(vertices.size() - 1);
+				}
 			}
 		};
 
@@ -150,10 +169,7 @@ void Mesh::LoadMeshObj(const std::string & File)
 				if (FindToken(tokens, "Bounds") > -1) // Parse render bounds
 				{
 					minBounds = glm::vec3(FloatToken(tokens[2]), FloatToken(tokens[3]), FloatToken(tokens[4]));
-					//std::cout << "Min Bounds: " << glm::to_string(minBounds) << std::endl;
-
 					maxBounds = glm::vec3(FloatToken(tokens[6]), FloatToken(tokens[7]), FloatToken(tokens[8]));
-					//std::cout << "Max Bounds: " << glm::to_string(maxBounds) << std::endl;
 				}
 			}
 			else if (tokens[0] == "f") // End of geometry, start pairing up vertices
@@ -188,6 +204,8 @@ void Mesh::LoadMeshObj(const std::string & File)
 		}*/
 
 		std::cout << "Mesh successfully loaded: '" << File << "'\n";
+		std::cout << "	" << std::to_string(vertices.size()) << " vertices\n";
+		std::cout << "	" << std::to_string(indices.size() / 3) << " faces\n";
 	}
 	else
 		std::cout << "Error: Mesh failed to load: '" << File << "'\n";
