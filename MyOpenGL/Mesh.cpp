@@ -195,8 +195,8 @@ void Mesh::LoadMeshObj(const std::string & File)
 	inFile.close();
 
 	// Optimise mesh
-	WeldAllVertices();
-	RemoveIsolatedVertices();
+	//WeldAllVertices();
+	//RemoveIsolatedVertices();
 
 	Construct();
 }

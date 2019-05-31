@@ -1,17 +1,17 @@
 #include "Shader.h"
 
 Shader* Shader::current = nullptr;
+std::vector<Shader*> Shader::all = std::vector<Shader*>();
 
 void Shader::Cleanup()
 {
-	/*for (int i = Shader::all.size() - 1; i >= 0 ; i--)
-		Shader::all[i]->Destroy();*/
+	for (int i = Shader::all.size() - 1; i >= 0 ; i--)
+		Shader::all[i]->Destroy();
 }
 
 void Shader::Create()
 {
-	//all.push_back(this);
-	//all.emplace_back(this);
+	all.push_back(this);
 }
 
 Shader::Shader()

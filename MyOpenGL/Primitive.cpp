@@ -175,6 +175,14 @@ void Primitive::WeldVertices(const std::vector<int>& Indices)
 
 void Primitive::RemoveIsolatedVertices()
 {
+	if (vertices.size() > 0)
+	{
+		for (int i = vertices.size() - 1; i >= 0; i--)				   // For each vertex
+		{
+			if (std::find(indices.begin(), indices.end(), i) >= indices.end()) // If no indices point to this vertex
+				vertices.erase(vertices.begin() + i);
+		}
+	}
 }
 
 void Primitive::CalculateBounds()

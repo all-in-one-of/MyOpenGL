@@ -19,8 +19,8 @@
 class Shader : public Object
 {
 private:
-	//static std::vector<std::shared_ptr<Shader>> all;
 	static Shader* current;
+	static std::vector<Shader*> all;
 	void Create();
 
 public:
