@@ -14,7 +14,6 @@ in vec3 WorldPosition;
 
 
 
-
 uniform vec3 MinBounds;
 uniform vec3 MaxBounds;
 vec3 Size = MaxBounds - MinBounds;

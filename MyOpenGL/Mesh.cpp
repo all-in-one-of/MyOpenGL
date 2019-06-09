@@ -139,7 +139,6 @@ void Mesh::LoadMeshObj(const std::string & File)
 				else // Otherwise we add a new vertex and push back an index to the end
 				{
 					vertices.push_back(v);
-					//indices.push_back(indices.size());
 					indices.push_back(vertices.size() - 1);
 				}
 			}
@@ -177,9 +176,15 @@ void Mesh::LoadMeshObj(const std::string & File)
 				VertexFromIndex(tokens[1]);
 				VertexFromIndex(tokens[2]);
 				VertexFromIndex(tokens[3]);
+				/*
+				if (tokens.size() > 4) // Quad, size includes f token
+				{
+					VertexFromIndex(tokens[4]);
+				}
+				else
+				{
 
-				//if (tokens.size() > 4) // Quad, size includes f token
-				//	VertexFromIndex(tokens[4]);
+				}*/
 			}
 		}
 

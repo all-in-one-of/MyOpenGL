@@ -37,6 +37,7 @@ public:
 
 
 private:
+	static std::vector<Primitive*> all;
 	GLuint VBO, VAO, EBO;
 
 protected:
@@ -70,6 +71,7 @@ public:
 	void WeldVertices(const std::vector<int>& Indices);
 	void RemoveIsolatedVertices();
 	void CalculateBounds(); // IMPLMENT ME
+	static void Cleanup();
 
 
 	// Setters

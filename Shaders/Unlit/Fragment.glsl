@@ -10,7 +10,6 @@ in mat4 LocalToWorld;
 in vec3 LocalPosition;
 in vec3 WorldPosition;
 
-
 // Uniforms
 #include "../Common.glsl"
 

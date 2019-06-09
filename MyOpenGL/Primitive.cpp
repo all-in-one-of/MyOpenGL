@@ -1,5 +1,6 @@
 #include "Primitive.h"
 
+std::vector<Primitive*> Primitive::all = std::vector<Primitive*>();
 
 
 std::vector<GLfloat> Primitive::GetRawVertices() const
@@ -37,6 +38,7 @@ std::vector<GLfloat> Primitive::GetRawVertices() const
 
 Primitive::Primitive()
 {
+	all.push_back(this);
 }
 
 
@@ -214,6 +216,12 @@ void Primitive::CalculateBounds()
 
 	minBounds = min;
 	maxBounds = max;
+}
+
+void Primitive::Cleanup()
+{
+	for (int i = all.size() - 1; i >= 0; i--)
+		all[i]->Destroy();
 }
 
 void Primitive::AddVertex(const Vertex & NewVertex)

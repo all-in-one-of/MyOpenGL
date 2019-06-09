@@ -23,11 +23,16 @@ public:
 		~Parameter() { };
 	};
 
+private:
+	static Material* current;
+
+public:
 
 	// Properties
 	Shader* shader; // The shader this is bound to
 	std::vector<Parameter<GLfloat>> floatParams;
 	std::vector<Parameter<glm::vec4>> vectorParams;
+	std::vector<Parameter<Texture*>> textureParams;
 	std::string name;
 
 
@@ -39,5 +44,6 @@ public:
 	
 	// Methods
 	void Bind();
+	static Material* GetCurrent();
 };
 

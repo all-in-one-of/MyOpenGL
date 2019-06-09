@@ -225,7 +225,7 @@ void main()
 	vec3 localUVW = GetLocalUVW(LocalPosition);
 	
 	material.Albedo = vec3(mix(t, t2, t2.a));
-	material.Albedo = vec3(1.0f, 0.0f, 0.0f);
+	
 	material.Metalness = localUVW.x;
 	material.Roughness = .5f; 
 	material.AmbientOcclusion = 1.0f;

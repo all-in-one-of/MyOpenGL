@@ -47,6 +47,8 @@ protected:
 	void Init();
 
 private:
+	static Texture* current;
+
 	// Properties
 	Type type = Type::Texture2D;
 	WrapMode wrapMode = WrapMode::Repeat;

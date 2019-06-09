@@ -1,11 +1,14 @@
 #include "Texture.h"
 
+Texture* Texture::current = nullptr;
 
-void Texture::Generate()
+void Texture::Generate() // Add to our texture pool
 {
 	GLuint cachedID;
 	glGenTextures(1, &cachedID);
 	ID = cachedID;
+
+	SetType(type);
 
 	std::cout << "Generated texture object: " << ID << std::endl;
 }
@@ -15,7 +18,6 @@ void Texture::Init()
 	Generate(); // Generate the texture so we can bind the ID
 	Bind(); // First bind so we can set the properties
 
-	SetType(type);
 	SetWrapMode(wrapMode);
 	SetFilter(filter);
 }
@@ -41,8 +43,12 @@ void Texture::Bind()
 {
 	if (IsValid())
 	{
-		//glActiveTexture(GL_TEXTURE0);
-		glBindTexture(type, ID);
+		if (current != this)
+		{
+			//glActiveTexture(GL_TEXTURE0);
+			glBindTexture(type, ID);
+			current = this;
+		}
 	}
 	else
 		std::cout << "Error: Failed to bind texture object: `" << source << std::endl;
@@ -60,6 +66,7 @@ void Texture::SetType(const Texture::Type & TextureType)
 
 void Texture::SetWrapMode(const Texture::WrapMode & TextureWrapMode)
 {
+	Bind();
 	wrapMode = TextureWrapMode;
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
@@ -67,6 +74,7 @@ void Texture::SetWrapMode(const Texture::WrapMode & TextureWrapMode)
 
 void Texture::SetFilter(const Texture::Filter & TextureFilter)
 {
+	Bind();
 	filter = TextureFilter;
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);

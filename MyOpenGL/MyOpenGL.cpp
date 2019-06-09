@@ -107,16 +107,6 @@ int main(int argc, char* argv[])
 	//camera.transform.rotation = glm::quat(glm::vec3(0.0f, glm::radians(180.0f), 0.0));
 
 
-	// ===================================== SHADERS & MATERIALS ============================================
-
-	shaderProgram.Compile("../Shaders/Main");
-	unlitShader.Compile("../Shaders/Unlit");
-
-	Material unlitMaterial(&unlitShader);
-	Material checkerMaterial(&shaderProgram);
-	checkerMaterial.name = "Checker_MI";
-	
-
 	// ===================================== TEXTURES ============================================
 
 	Texture tex = Texture("../Content/1024x1024 Texel Density Texture 1.png");
@@ -128,15 +118,29 @@ int main(int argc, char* argv[])
 	shaderProgram.SetInt("tex2", 1);
 
 
+	// ===================================== SHADERS & MATERIALS ============================================
+
+	shaderProgram.Compile("../Shaders/Main");
+	unlitShader.Compile("../Shaders/Unlit");
+
+	Material unlitMaterial(&unlitShader);
+	unlitMaterial.name = "Unlit_MI";
+	unlitMaterial.textureParams.push_back(Material::Parameter<Texture*>("tex1", &tex));
+	Material checkerMaterial(&shaderProgram);
+	checkerMaterial.name = "Checker_MI";
+	checkerMaterial.textureParams.push_back(Material::Parameter<Texture*>("tex", &tex));
+	checkerMaterial.textureParams.push_back(Material::Parameter<Texture*>("tex2", &tex2));
+
+
 	// ===================================== VAO & VBO ============================================
 	
 	Mesh box;
-	box.LoadMeshObj("../Content/Box_SM.obj");
+	//box.LoadMeshObj("../Content/Box_SM.obj");
 	box.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
 	box.transform.position = glm::vec3(-5.0f, 0.0f, 0.0f);
 	box.material = &unlitMaterial;
 	Mesh sphere;
-	sphere.LoadMeshObj("../Content/MaterialTest_SM.obj");
+	//sphere.LoadMeshObj("../Content/MaterialTest_SM.obj");
 	sphere.material = &checkerMaterial;
 	//sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
@@ -254,10 +258,11 @@ int main(int argc, char* argv[])
 
 
 		// Bind textures
-		glActiveTexture(GL_TEXTURE0);
+		/*glActiveTexture(GL_TEXTURE0);
 		tex.Bind();
 		glActiveTexture(GL_TEXTURE1);
-		tex2.Bind();
+		tex2.Bind();*/
+
 		//glBindTexture(GL_TEXTURE_2D, 1);
 		//tex.Bind(); // Bind our texture
 		//tex2.Bind();
@@ -272,9 +277,8 @@ int main(int argc, char* argv[])
 		box.Draw();
 		sphere.Draw();
 		plane.Draw();
-		
-		
 		prim.Draw();
+
 		for (int i = 0; i < positions.size(); i++)
 		{
 			glm::mat4 transform = glm::mat4(1.0f); // Identity
@@ -301,6 +305,7 @@ int main(int argc, char* argv[])
 	plane.Destroy();
 
 	Shader::Cleanup();
+	Primitive::Cleanup();
 	glfwTerminate(); // Clean up GLFW context
 	return 0; // Return success code
 }
