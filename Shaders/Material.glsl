@@ -6,4 +6,7 @@ struct Material
 	float Metalness;
 	float Roughness;
 	float AmbientOcclusion;
-} material;
+};
+
+uniform Material inMaterial;
+Material outMaterial;

@@ -56,6 +56,9 @@ void Texture::Bind()
 
 void Texture::Unbind()
 {
+	/*Bind();
+	glDisable(type);*/
+
 	ID = -1;
 }
 

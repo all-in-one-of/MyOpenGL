@@ -26,6 +26,8 @@ vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
 #include "../BRDFs.glsl"
 #include "../Lights.glsl"
 
+uniform float MyParameter = 0.0f;
+
 
 // ========================================= LIGHTS =============================================
 
@@ -37,16 +39,18 @@ PointLight lights[NUM_OF_LIGHTS];
 void main()
 {
 	// Materials
+	outMaterial = inMaterial;
 	vec4 t = texture(tex, TexCoord.xy);
 	vec4 t2 = texture(tex2, TexCoord.xy);
 	
 	vec3 localUVW = GetLocalUVW(LocalPosition);
 	
-	material.Albedo = vec3(mix(t, t2, t2.a));
-	//material.Albedo = vec3(1.0f, 0.0f, 0.0f);
-	material.Metalness = localUVW.x;
-	material.Roughness = .5f; //localUVW.z;
-	material.AmbientOcclusion = 1.0f;
+	//outMaterial.Albedo = vec3(mix(t, t2, t2.a));
+	//outMaterial.Albedo = vec3(1.0f, 0.0f, 0.0f);
+	//outMaterial.Albedo = vec3(1.0f);
+	//outMaterial.Metalness = localUVW.x;
+	//outMaterial.Roughness = .2f; //localUVW.z;
+	//outMaterial.AmbientOcclusion = 1.0f;
 	
 	
 	vec3 Lo = vec3(0.0f); // Lobe
@@ -90,7 +94,7 @@ void main()
 	//Lo += CalculateSpotLight(spotLight);
 	
 
-	vec3 ambient = vec3(0.005f) * material.Albedo * material.AmbientOcclusion; // Apply ambient lighting
+	vec3 ambient = vec3(0.005f) * outMaterial.Albedo * outMaterial.AmbientOcclusion; // Apply ambient lighting
 	vec3 colour = ambient + Lo;
 	
 	// Gamma tonemapping
@@ -98,6 +102,8 @@ void main()
 	colour = pow(colour, vec3(1.0f / 2.2f));
 
 	FragColour = vec4(colour, 1.0f);
+	//wFragColour = vec4(outMaterial.Albedo, 1.0f);
+	//FragColour = vec4(outMaterial.Metalness);
 	
 	//FragColour = vec4(ViewDirection, 1.0f);
 	//FragColour = vec4(max(dot(ViewDirection, PixelNormal), 0.0f));

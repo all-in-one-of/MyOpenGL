@@ -125,11 +125,22 @@ int main(int argc, char* argv[])
 
 	Material unlitMaterial(&unlitShader);
 	unlitMaterial.name = "Unlit_MI";
-	unlitMaterial.textureParams.push_back(Material::Parameter<Texture*>("tex1", &tex));
 	Material checkerMaterial(&shaderProgram);
 	checkerMaterial.name = "Checker_MI";
-	checkerMaterial.textureParams.push_back(Material::Parameter<Texture*>("tex", &tex));
-	checkerMaterial.textureParams.push_back(Material::Parameter<Texture*>("tex2", &tex2));
+	checkerMaterial.SetTextureParameter("tex", &tex);
+	checkerMaterial.SetTextureParameter("tex2", &tex2);
+	checkerMaterial.SetVectorParameter("inMaterial.Albedo", glm::vec3(1.0f));
+	checkerMaterial.SetFloatParameter("inMaterial.Metalness", 0.0f);
+	checkerMaterial.SetFloatParameter("inMaterial.Roughness", 0.25f);
+	checkerMaterial.SetFloatParameter("inMaterial.AmbientOcclusion", 1.0f);
+
+	Material sphereMaterial(&shaderProgram);
+	sphereMaterial.name = "Sphere_MI";
+	sphereMaterial.SetTextureParameter("tex", &tex);
+	sphereMaterial.SetVectorParameter("inMaterial.Albedo", glm::vec3(1.0f, 0.1f, 0.7f));
+	sphereMaterial.SetFloatParameter("inMaterial.Metalness", 1.0f);
+	sphereMaterial.SetFloatParameter("inMaterial.Roughness", 0.25f);
+	sphereMaterial.SetFloatParameter("inMaterial.AmbientOcclusion", 1.0f);
 
 
 	// ===================================== VAO & VBO ============================================
@@ -140,9 +151,9 @@ int main(int argc, char* argv[])
 	box.transform.position = glm::vec3(-5.0f, 0.0f, 0.0f);
 	box.material = &unlitMaterial;
 	Mesh sphere;
-	//sphere.LoadMeshObj("../Content/MaterialTest_SM.obj");
-	sphere.material = &checkerMaterial;
-	//sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
+	sphere.LoadMeshObj("../Content/Sphere_SM.obj");
+	sphere.material = &sphereMaterial;
+	sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
 
 	Primitive plane;

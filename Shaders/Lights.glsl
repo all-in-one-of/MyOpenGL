@@ -2,8 +2,8 @@
 
 // ========================================= Lights =============================================
 
-// Assume we have included "../Materials.glsl" - this will be added recursively soon
-// We will  assume a variable called material already exists
+// Assume we have included "../outMaterials.glsl" - this will be added recursively soon
+// We will  assume a variable called outMaterial already exists which is the result of our material shader
 
 struct DirectionalLight
 {
@@ -20,7 +20,7 @@ vec3 BlinnPhong(vec3 Direction, vec3 Radiance)
 	
 	// Blinn
 	float NoV = max( dot(N, -L), 0.0f );
-	vec3 diffuse = vec3(NoV) * Radiance * material.Albedo;
+	vec3 diffuse = vec3(NoV) * Radiance * outMaterial.Albedo;
 	
 	// Phong
 	vec3 reflectDir = reflect(-L, N);
@@ -65,7 +65,7 @@ vec3 CalculateRadiance(vec3 N, vec3 V, vec3 L, vec3 Radiance, Material Mat)
 vec3 CalculateDirectionalLight(DirectionalLight Light)
 {
 	//return BlinnPhong(Light.Direction, Light.Radiance);
-	return CalculateRadiance(PixelNormal, ViewDirection, Light.Direction, Light.Radiance, material);
+	return CalculateRadiance(PixelNormal, ViewDirection, Light.Direction, Light.Radiance, outMaterial);
 }
 
 struct PointLight
@@ -81,7 +81,7 @@ vec3 CalculatePointLight(PointLight Light)
 	float attenuation = 1.0f / (distance*distance); // Inverse squared attenuations
 	
 	//return BlinnPhong(dir, Light.Radiance * attenuation);
-	return CalculateRadiance(PixelNormal, ViewDirection, dir, Light.Radiance * attenuation, material);
+	return CalculateRadiance(PixelNormal, ViewDirection, dir, Light.Radiance * attenuation, outMaterial);
 }
 
 struct SpotLight
@@ -103,7 +103,7 @@ vec3 CalculateSpotLight(SpotLight Light)
 		float distance = length(dir);
 		float attenuation = 1.0f / (distance*distance); // Inverse squared attenuations
 		//return BlinnPhong(normalize(dir), Light.Radiance * attenuation);
-		return CalculateRadiance(PixelNormal, ViewDirection, dir, Light.Radiance * attenuation, material);
+		return CalculateRadiance(PixelNormal, ViewDirection, dir, Light.Radiance * attenuation, outMaterial);
 	}
 	else
 		return vec3(0.0f);

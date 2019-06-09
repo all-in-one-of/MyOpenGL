@@ -61,10 +61,10 @@ GLint Shader::LinkShaders()
 	if (!success)
 	{
 		glGetProgramInfoLog(ID, 512, NULL, infoLog);
-		std::cout << "Error: Shaders failed to link" << infoLog << std::endl;
+		std::cout << "Error: Failed to link sub-shaders: '" << source << "'\n" << infoLog << std::endl;
 	}
 	else
-		std::cout << "Shaders successfully linked" << std::endl;
+		std::cout << "Sub-shaders successfully linked: '" << source << "'" << std::endl;
 
 	glDeleteShader(vertexShader.GetID());
 	glDeleteShader(fragmentShader.GetID());

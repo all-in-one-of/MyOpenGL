@@ -52,7 +52,10 @@ struct Material
 	float Metalness;
 	float Roughness;
 	float AmbientOcclusion;
-} material;
+};
+
+uniform Material inMaterial;
+Material outMaterial;
 
 
 
@@ -119,7 +122,7 @@ vec3 BlinnPhong(vec3 Direction, vec3 Radiance)
 	
 	
 	float NoV = max( dot(N, -L), 0.0f );
-	vec3 diffuse = vec3(NoV) * Radiance * material.Albedo;
+	vec3 diffuse = vec3(NoV) * Radiance * outMaterial.Albedo;
 	
 	
 	vec3 reflectDir = reflect(-L, N);
@@ -164,7 +167,7 @@ vec3 CalculateRadiance(vec3 N, vec3 V, vec3 L, vec3 Radiance, Material Mat)
 vec3 CalculateDirectionalLight(DirectionalLight Light)
 {
 	
-	return CalculateRadiance(PixelNormal, ViewDirection, Light.Direction, Light.Radiance, material);
+	return CalculateRadiance(PixelNormal, ViewDirection, Light.Direction, Light.Radiance, outMaterial);
 }
 
 struct PointLight
@@ -180,7 +183,7 @@ vec3 CalculatePointLight(PointLight Light)
 	float attenuation = 1.0f / (distance*distance); 
 	
 	
-	return CalculateRadiance(PixelNormal, ViewDirection, dir, Light.Radiance * attenuation, material);
+	return CalculateRadiance(PixelNormal, ViewDirection, dir, Light.Radiance * attenuation, outMaterial);
 }
 
 struct SpotLight
@@ -202,11 +205,13 @@ vec3 CalculateSpotLight(SpotLight Light)
 		float distance = length(dir);
 		float attenuation = 1.0f / (distance*distance); 
 		
-		return CalculateRadiance(PixelNormal, ViewDirection, dir, Light.Radiance * attenuation, material);
+		return CalculateRadiance(PixelNormal, ViewDirection, dir, Light.Radiance * attenuation, outMaterial);
 	}
 	else
 		return vec3(0.0f);
 }
+
+uniform float MyParameter = 0.0f;
 
 
 
@@ -219,16 +224,18 @@ PointLight lights[NUM_OF_LIGHTS];
 void main()
 {
 	
+	outMaterial = inMaterial;
 	vec4 t = texture(tex, TexCoord.xy);
 	vec4 t2 = texture(tex2, TexCoord.xy);
 	
 	vec3 localUVW = GetLocalUVW(LocalPosition);
 	
-	material.Albedo = vec3(mix(t, t2, t2.a));
 	
-	material.Metalness = localUVW.x;
-	material.Roughness = .5f; 
-	material.AmbientOcclusion = 1.0f;
+	
+	
+	
+	
+	
 	
 	
 	vec3 Lo = vec3(0.0f); 
@@ -272,7 +279,7 @@ void main()
 	
 	
 
-	vec3 ambient = vec3(0.005f) * material.Albedo * material.AmbientOcclusion; 
+	vec3 ambient = vec3(0.005f) * outMaterial.Albedo * outMaterial.AmbientOcclusion; 
 	vec3 colour = ambient + Lo;
 	
 	
@@ -280,6 +287,8 @@ void main()
 	colour = pow(colour, vec3(1.0f / 2.2f));
 
 	FragColour = vec4(colour, 1.0f);
+	
+	
 	
 	
 	
