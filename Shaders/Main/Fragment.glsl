@@ -98,7 +98,8 @@ void main()
 	colour = pow(colour, vec3(1.0f / 2.2f));
 
 	FragColour = vec4(colour, 1.0f);
-	//wFragColour = vec4(outMaterial.Albedo, 1.0f);
+	
+	//FragColour = vec4(outMaterial.Albedo, 1.0f);
 	//FragColour = vec4(outMaterial.Metalness);
 	
 	//FragColour = vec4(ViewDirection, 1.0f);

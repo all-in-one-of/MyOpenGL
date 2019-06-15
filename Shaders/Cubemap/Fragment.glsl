@@ -20,12 +20,14 @@ uniform sampler2D EquirectangularMap;
 
 #include "../Material.glsl"
 
-
 // ========================================= MAIN RENDER =============================================
 
 void main()
 {
 	outMaterial = inMaterial;
-	FragColour = texture(EquirectangularMap, TexCoord.xy);
+	
+	vec2 uv = SphericalUVsFromPosition(normalize(LocalPosition));
+	
+	FragColour = texture(EquirectangularMap, uv.xy);
 	//FragColour = vec4(.5f);
 } 
