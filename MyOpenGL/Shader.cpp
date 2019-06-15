@@ -1,22 +1,29 @@
 #include "Shader.h"
 
 Shader* Shader::current = nullptr;
-std::vector<Shader*> Shader::all = std::vector<Shader*>();
+std::set<Shader*> Shader::all = std::set<Shader*>();
 
 void Shader::Cleanup()
 {
-	for (int i = Shader::all.size() - 1; i >= 0 ; i--)
-		Shader::all[i]->Destroy();
+	auto it = all.begin();
+	while (it != all.end())
+	{
+		if ((*it) != nullptr)
+			(*it)->Destroy();
+
+		it++; // Move to next element in set
+	}
 }
 
 void Shader::Create()
 {
-	all.push_back(this);
+	//all.push_back(this);
+	all.insert(this);
 }
 
 Shader::Shader()
 {
-	Create();
+
 }
 
 Shader::Shader(const std::string & Folder)
@@ -42,6 +49,7 @@ GLint Shader::CompileShadersFromFolder(const std::string & Folder)
 	success = fragmentShader.CompileFile(Folder + "/Fragment.glsl") && success;
 
 	source = Folder;
+	Create();
 
 	return success;
 }
@@ -88,6 +96,23 @@ GLint Shader::Recompile()
 		success = success && Compile(source);
 
 	return success;
+}
+
+void Shader::RecompileAll()
+{
+	std::cout << std::to_string(all.size()) << std::endl;
+
+	auto it = all.begin();
+	while (it != all.end())
+	{
+		if (*it != nullptr)
+		{
+			(*it)->Recompile();
+			std::cout << "Recompiling '" << (*it)->source << std::endl;
+		}
+
+		it++; // Move to next element in set
+	}
 }
 
 void Shader::Bind()

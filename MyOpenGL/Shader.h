@@ -13,6 +13,7 @@
 #include "SubShader.h"
 #include "Camera.h"
 
+#include <set>
 #include <algorithm>
 
 
@@ -20,7 +21,7 @@ class Shader : public Object
 {
 private:
 	static Shader* current;
-	static std::vector<Shader*> all;
+	static std::set<Shader*> all;
 	void Create();
 
 public:
@@ -40,13 +41,14 @@ public:
 	Shader();
 	Shader(const std::string& Folder);
 	~Shader();
-
+	
 
 	// Methods
 	GLint CompileShadersFromFolder(const std::string& Folder);
 	GLint LinkShaders();
 	GLint Compile(const std::string& Folder);
 	GLint Recompile();
+	static void RecompileAll();
 	void Bind();
 	void Destroy();
 	static void Cleanup();

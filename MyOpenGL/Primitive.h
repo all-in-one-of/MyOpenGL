@@ -5,6 +5,8 @@
 #include "Material.h"
 
 #include <vector>
+#include <set>
+#include <algorithm>
 
 
 class Primitive : public Object
@@ -37,7 +39,7 @@ public:
 
 
 private:
-	static std::vector<Primitive*> all;
+	static std::set<Primitive*> all;
 	GLuint VBO, VAO, EBO;
 
 protected:

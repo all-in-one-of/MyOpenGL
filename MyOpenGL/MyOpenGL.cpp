@@ -10,18 +10,12 @@
 #include "Mesh.h"
 #include "EditorCamera.h"
 
-//#include <filesystem>
-
-
-//#include <filesystem>
-//namespace FileSystem = std::filesystem;
-
 
 const GLuint SRC_WIDTH = 1280;
 const GLuint SRC_HEIGHT = 720;
 Window window;
 EditorCamera camera;
-Shader shaderProgram, unlitShader;
+Shader shaderProgram, unlitShader, cubemapShader;
 
 double elapsedTime = 0.0f, deltaTime = 0.0f;
 
@@ -63,10 +57,7 @@ void EditorInput(const float& DeltaTime)
 	else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_R) == GLFW_PRESS) // HOT RECOMPILE
 	{
 		std::cout << "SHADERS HOT RECOMPILE" << std::endl;
-		shaderProgram.Recompile();
-		shaderProgram.SetInt("tex", 0);
-		shaderProgram.SetInt("tex2", 1);
-		unlitShader.Recompile();
+		Shader::RecompileAll();
 	}
 }
 
@@ -111,24 +102,32 @@ int main(int argc, char* argv[])
 
 	Texture tex = Texture("../Content/1024x1024 Texel Density Texture 1.png");
 	Texture tex2;
-	tex2.format = Texture::Format::RGBA;
+	tex2.SetFormat(Texture::Format::RGBA);
 	tex2.LoadResource("../Content/houdini-763d999dfe.png");
-	shaderProgram.Bind();
-	shaderProgram.SetInt("tex", 0);
-	shaderProgram.SetInt("tex2", 1);
 
+	Texture environmentMap;
+	environmentMap.SetFormatHDR();
+	environmentMap.SetWrapMode(Texture::WrapMode::ClampToEdge);
+	environmentMap.LoadResource("../Content/small_hangar_01_1k.hdr");
 
 	// ===================================== SHADERS & MATERIALS ============================================
 
 	shaderProgram.Compile("../Shaders/Main");
 	unlitShader.Compile("../Shaders/Unlit");
+	cubemapShader.Compile("../Shaders/Cubemap");
+
 
 	Material unlitMaterial(&unlitShader);
 	unlitMaterial.name = "Unlit_MI";
+
+	Material cubemapMaterial(&cubemapShader);
+	cubemapMaterial.name = "Cubemap_MI";
+	cubemapMaterial.SetTextureParameter("EquirectangularMap", &environmentMap);
+
 	Material checkerMaterial(&shaderProgram);
 	checkerMaterial.name = "Checker_MI";
 	checkerMaterial.SetTextureParameter("tex", &tex);
-	checkerMaterial.SetTextureParameter("tex2", &tex2);
+	checkerMaterial.SetTextureParameter("tex2", &environmentMap);
 	checkerMaterial.SetVectorParameter("inMaterial.Albedo", glm::vec3(1.0f));
 	checkerMaterial.SetFloatParameter("inMaterial.Metalness", 0.0f);
 	checkerMaterial.SetFloatParameter("inMaterial.Roughness", 0.25f);
@@ -137,6 +136,7 @@ int main(int argc, char* argv[])
 	Material sphereMaterial(&shaderProgram);
 	sphereMaterial.name = "Sphere_MI";
 	sphereMaterial.SetTextureParameter("tex", &tex);
+	sphereMaterial.SetTextureParameter("tex2", &tex2);
 	sphereMaterial.SetVectorParameter("inMaterial.Albedo", glm::vec3(1.0f, 0.1f, 0.7f));
 	sphereMaterial.SetFloatParameter("inMaterial.Metalness", 1.0f);
 	sphereMaterial.SetFloatParameter("inMaterial.Roughness", 0.25f);
@@ -150,6 +150,7 @@ int main(int argc, char* argv[])
 	box.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
 	box.transform.position = glm::vec3(-5.0f, 0.0f, 0.0f);
 	box.material = &unlitMaterial;
+
 	Mesh sphere;
 	sphere.LoadMeshObj("../Content/Sphere_SM.obj");
 	sphere.material = &sphereMaterial;
@@ -173,7 +174,7 @@ int main(int argc, char* argv[])
 
 
 	Primitive prim;
-	prim.material = &checkerMaterial;
+	prim.material = &cubemapMaterial;
 
 	// Geometry
 	// Front face

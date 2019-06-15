@@ -1,6 +1,6 @@
 #include "Primitive.h"
 
-std::vector<Primitive*> Primitive::all = std::vector<Primitive*>();
+std::set<Primitive*> Primitive::all = std::set<Primitive*>();
 
 
 std::vector<GLfloat> Primitive::GetRawVertices() const
@@ -38,7 +38,7 @@ std::vector<GLfloat> Primitive::GetRawVertices() const
 
 Primitive::Primitive()
 {
-	all.push_back(this);
+	
 }
 
 
@@ -97,6 +97,8 @@ void Primitive::Construct()
 	AddAttribute(4, GL_TRUE); // Normal
 
 	CalculateBounds();
+
+	all.insert(this); // Insert unique reference to this primitive, set so each element is unique
 }
 
 void Primitive::Draw(const glm::mat4& Transform)
@@ -220,8 +222,14 @@ void Primitive::CalculateBounds()
 
 void Primitive::Cleanup()
 {
-	for (int i = all.size() - 1; i >= 0; i--)
-		all[i]->Destroy();
+	auto it = all.begin();
+	while (it != all.end())
+	{
+		if ((*it) != nullptr)
+			(*it)->Destroy();
+
+		it++; // Move to next element in set
+	}
 }
 
 void Primitive::AddVertex(const Vertex & NewVertex)
