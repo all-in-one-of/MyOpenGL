@@ -1,6 +1,7 @@
 #version 330 core
 out vec4 FragColour; // Output
 
+// Uniforms
 // Inputs marshalled through vertex shader
 in vec2 TexCoord;
 in vec3 VertexColour;
@@ -10,23 +11,16 @@ in mat4 LocalToWorld;
 in vec3 LocalPosition;
 in vec3 WorldPosition;
 
-
-// Uniforms
 #include "../Common.glsl"
+#include "../CommonFragment.glsl"
 
 // Samplers
 uniform sampler2D tex;
 uniform sampler2D tex2;
 
-
-vec3 PixelNormal = normalize(VertexNormal); // Not always correctly normalized from vertex->fragment interpolation
-vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
-
 #include "../Material.glsl"
 #include "../BRDFs.glsl"
 #include "../Lights.glsl"
-
-uniform float MyParameter = 0.0f;
 
 
 // ========================================= LIGHTS =============================================
@@ -42,6 +36,8 @@ void main()
 	outMaterial = inMaterial;
 	vec4 t = texture(tex, TexCoord.xy);
 	vec4 t2 = texture(tex2, TexCoord.xy);
+	//outMaterial.Albedo *= vec3( mix( t, t2, t2.a ) );
+	outMaterial.Albedo *= vec3(t2);
 	
 	vec3 localUVW = GetLocalUVW(LocalPosition);
 	

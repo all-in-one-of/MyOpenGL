@@ -39,7 +39,8 @@ public:
 	{
 		R = GL_RED,
 		RGB = GL_RGB,
-		RGBA = GL_RGBA
+		RGBA = GL_RGBA,
+		HDR = GL_RGB16F
 	};
 
 protected:
@@ -63,6 +64,7 @@ public:
 	// Properties
 	GLboolean GenerateMipMaps = GL_TRUE;
 	GLboolean FlipVertical = GL_TRUE;
+	Format internalFormat = Format::RGB;
 	Format format = Format::RGB;
 
 
@@ -80,6 +82,10 @@ public:
 	void SetFilter(const Filter& TextureFilter);
 	GLint LoadResource(const GLchar* File);
 
+
+	// Setters
+	void SetFormat(const Format& NewFormat, const GLboolean& SetInternalFormat = GL_TRUE);
+	void SetFormatHDR();
 
 	// Getters
 	GLboolean IsValid() const;

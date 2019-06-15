@@ -96,7 +96,7 @@ GLint Texture::LoadResource(const GLchar* File)
 
 		if (data) // If the data is valid
 		{
-			glTexImage2D(type, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+			glTexImage2D(type, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
 			if (GenerateMipMaps)
 				glGenerateMipmap(type);
@@ -113,6 +113,19 @@ GLint Texture::LoadResource(const GLchar* File)
 		std::cout << "ERROR: Texture object invalid: '" << File << "'\n";
 
 	return success;
+}
+
+void Texture::SetFormat(const Format & NewFormat, const GLboolean & SetInternalFormat)
+{
+	format = NewFormat;
+	if (SetInternalFormat)
+		internalFormat = NewFormat;
+}
+
+void Texture::SetFormatHDR()
+{
+	format = Format::RGB;
+	internalFormat = Format::HDR;
 }
 
 GLboolean Texture::IsValid() const

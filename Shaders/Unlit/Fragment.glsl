@@ -10,16 +10,14 @@ in mat4 LocalToWorld;
 in vec3 LocalPosition;
 in vec3 WorldPosition;
 
+
 // Uniforms
 #include "../Common.glsl"
+#include "../CommonFragment.glsl"
 
 // Samplers
 uniform sampler2D tex;
 uniform sampler2D tex2;
-
-
-vec3 PixelNormal = normalize(VertexNormal); // Not always correctly normalized from vertex->fragment interpolation
-vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
 
 #include "../Material.glsl"
 
