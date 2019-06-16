@@ -9,6 +9,9 @@
 #include "Texture2D.h"
 #include "Mesh.h"
 #include "EditorCamera.h"
+#include "StaticMeshObject.h"
+
+#include "jsoncpp/json/json.h"
 
 
 const GLuint SRC_WIDTH = 1280;
@@ -90,6 +93,23 @@ int main(int argc, char* argv[])
 
 	glEnable(GL_DEPTH_TEST);
 
+	/*std::ifstream inFile("../Content/alice.json");
+	Json::StreamWriterBuilder reader;
+	Json::Reader reader;
+	Json::Value obj;
+	reader.parse(inFile, obj);
+	std::cout << "Book: " << obj["book"].asString() << std::endl;
+	std::cout << "Year: " << obj["year"].asUInt() << std::endl;
+	
+	const Json::Value& characters = obj["characters"]; // Array of characters
+	for (int i = 0; i < characters.size(); i++)
+	{
+		std::cout << "	name: " << characters[i]["name"].asString();
+		std::cout << "	chapter: " << characters[i]["chapter"].asUInt();
+		std::cout << "\n";
+	}*/
+
+
 	// ===================================== CAMERA ============================================
 
 	camera.fieldOfView = 65.0f;
@@ -98,7 +118,18 @@ int main(int argc, char* argv[])
 	//camera.transform.rotation = glm::quat(glm::vec3(0.0f, glm::radians(180.0f), 0.0));
 
 
+	// ===================================== FRAME BUFFER ============================================
+
+	/*
+	GLuint FBO;
+	glGenFramebuffers(1, &FBO); // Generate framebuffer object
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO); // Bind read/write framebuffer
+	*/
+
+
 	// ===================================== TEXTURES ============================================
+
+
 
 	Texture tex = Texture("../Content/1024x1024 Texel Density Texture 1.png");
 	Texture tex2;
@@ -145,76 +176,76 @@ int main(int argc, char* argv[])
 
 	// ===================================== VAO & VBO ============================================
 	
-	Mesh box;
-	//box.LoadMeshObj("../Content/Box_SM.obj");
-	box.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
-	box.transform.position = glm::vec3(-5.0f, 0.0f, 0.0f);
-	box.material = &unlitMaterial;
+	Mesh boxMesh;
+	boxMesh.LoadMeshObj("../Content/Box_SM.obj");
+	//box.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
+	//box.transform.position = glm::vec3(-5.0f, 0.0f, 0.0f);
+	boxMesh.material = &unlitMaterial;
 
-	Mesh sphere;
-	sphere.LoadMeshObj("../Content/Sphere_SM.obj");
-	sphere.material = &sphereMaterial;
-	sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
+	Mesh sphereMesh;
+	sphereMesh.LoadMeshObj("../Content/Sphere_SM.obj");
+	sphereMesh.material = &sphereMaterial;
+	//sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
 
-	Primitive plane;
+	Primitive planeMesh;
 
-	plane.AddVertex(Primitive::Vertex({  0.5f,  0.0f, -0.5f }, { 1.0f, 1.0f })); // Front - Top right
-	plane.AddVertex(Primitive::Vertex({  0.5f, -0.0f,  0.5f }, { 1.0f, 0.0f })); // Front - Bottom right
-	plane.AddVertex(Primitive::Vertex({ -0.5f, -0.0f,  0.5f }, { 0.0f, 0.0f })); // Front - Bottom left
-	plane.AddVertex(Primitive::Vertex({ -0.5f,  0.0f, -0.5f }, { 0.0f, 1.0f })); // Front - Top left
-	plane.indices = {
+	planeMesh.AddVertex(Primitive::Vertex({  0.5f,  0.0f, -0.5f }, { 1.0f, 1.0f })); // Front - Top right
+	planeMesh.AddVertex(Primitive::Vertex({  0.5f, -0.0f,  0.5f }, { 1.0f, 0.0f })); // Front - Bottom right
+	planeMesh.AddVertex(Primitive::Vertex({ -0.5f, -0.0f,  0.5f }, { 0.0f, 0.0f })); // Front - Bottom left
+	planeMesh.AddVertex(Primitive::Vertex({ -0.5f,  0.0f, -0.5f }, { 0.0f, 1.0f })); // Front - Top left
+	planeMesh.indices = {
 		0, 1, 3,
 		1, 2, 3
 	};
-	plane.Construct();
-	plane.transform.scale = glm::vec3(3.0f);
-	plane.transform.position = glm::vec3(0.0f, -.35f, 0.0f);
-	plane.material = &unlitMaterial;
+	planeMesh.Construct();
+	//plane.transform.scale = glm::vec3(3.0f);
+	//plane.transform.position = glm::vec3(0.0f, -.35f, 0.0f);
+	planeMesh.material = &unlitMaterial;
 
 
-	Primitive prim;
-	prim.material = &cubemapMaterial;
+	Primitive primMesh;
+	primMesh.material = &cubemapMaterial;
 
 	// Geometry
 	// Front face
-	prim.AddVertex(Primitive::Vertex({  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Top right
-	prim.AddVertex(Primitive::Vertex({  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Bottom right
-	prim.AddVertex(Primitive::Vertex({ -0.5f, -0.5f,  0.5f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Bottom left
-	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Top left
+	primMesh.AddVertex(Primitive::Vertex({  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Top right
+	primMesh.AddVertex(Primitive::Vertex({  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Bottom right
+	primMesh.AddVertex(Primitive::Vertex({ -0.5f, -0.5f,  0.5f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Bottom left
+	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Top left
 
 	// Back face
-	prim.AddVertex(Primitive::Vertex({  0.5f,  0.5f, -0.5f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f })); // Back  - Top right
-	prim.AddVertex(Primitive::Vertex({  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f })); // Back  - Bottom right
-	prim.AddVertex(Primitive::Vertex({ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f })); // Back  - Bottom left
-	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f })); // Back -  Top left
+	primMesh.AddVertex(Primitive::Vertex({  0.5f,  0.5f, -0.5f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f })); // Back  - Top right
+	primMesh.AddVertex(Primitive::Vertex({  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f })); // Back  - Bottom right
+	primMesh.AddVertex(Primitive::Vertex({ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f })); // Back  - Bottom left
+	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f })); // Back -  Top left
 
 	// Top face
-	prim.AddVertex(Primitive::Vertex({  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { 0.0f, 1.0f, 0.0f })); // Front - Top right
-	prim.AddVertex(Primitive::Vertex({  0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f })); // Back  - Top right
-	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f })); // Back  - Top left
-	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f })); // Front - Top left
+	primMesh.AddVertex(Primitive::Vertex({  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { 0.0f, 1.0f, 0.0f })); // Front - Top right
+	primMesh.AddVertex(Primitive::Vertex({  0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f })); // Back  - Top right
+	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f })); // Back  - Top left
+	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f })); // Front - Top left
 
 	// Bottom face
-	prim.AddVertex(Primitive::Vertex({ 0.5f,   -0.5f,  0.5f }, { 1.0f, 1.0f }, { 0.0f, -1.0f, 0.0f })); // Front - Top right
-	prim.AddVertex(Primitive::Vertex({ 0.5f,   -0.5f, -0.5f }, { 1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f })); // Back  - Top right
-	prim.AddVertex(Primitive::Vertex({ -0.5f,  -0.5f, -0.5f }, { 0.0f, 0.0f }, { 0.0f, -1.0f, 0.0f })); // Back  - Top left
-	prim.AddVertex(Primitive::Vertex({ -0.5f,  -0.5f,  0.5f }, { 0.0f, 1.0f }, { 0.0f, -1.0f, 0.0f })); // Front - Top left
+	primMesh.AddVertex(Primitive::Vertex({ 0.5f,   -0.5f,  0.5f }, { 1.0f, 1.0f }, { 0.0f, -1.0f, 0.0f })); // Front - Top right
+	primMesh.AddVertex(Primitive::Vertex({ 0.5f,   -0.5f, -0.5f }, { 1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f })); // Back  - Top right
+	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  -0.5f, -0.5f }, { 0.0f, 0.0f }, { 0.0f, -1.0f, 0.0f })); // Back  - Top left
+	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  -0.5f,  0.5f }, { 0.0f, 1.0f }, { 0.0f, -1.0f, 0.0f })); // Front - Top left
 
 	// Left face
-	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { -1.0f, 0.0f, 0.0f })); // Front - Top left
-	prim.AddVertex(Primitive::Vertex({ -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f }, { -1.0f, 0.0f, 0.0f })); // Front - Bottom left
-	prim.AddVertex(Primitive::Vertex({ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f })); // Back  - Bottom left
-	prim.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f }, { -1.0f, 0.0f, 0.0f })); // Back -  Top left
+	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { -1.0f, 0.0f, 0.0f })); // Front - Top left
+	primMesh.AddVertex(Primitive::Vertex({ -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f }, { -1.0f, 0.0f, 0.0f })); // Front - Bottom left
+	primMesh.AddVertex(Primitive::Vertex({ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f })); // Back  - Bottom left
+	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f }, { -1.0f, 0.0f, 0.0f })); // Back -  Top left
 
 	// Right face
-	prim.AddVertex(Primitive::Vertex({ 0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f })); // Front - Top left
-	prim.AddVertex(Primitive::Vertex({ 0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f })); // Front - Bottom left
-	prim.AddVertex(Primitive::Vertex({ 0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f })); // Back  - Bottom left
-	prim.AddVertex(Primitive::Vertex({ 0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f })); // Back -  Top left
+	primMesh.AddVertex(Primitive::Vertex({ 0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f })); // Front - Top left
+	primMesh.AddVertex(Primitive::Vertex({ 0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f })); // Front - Bottom left
+	primMesh.AddVertex(Primitive::Vertex({ 0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f })); // Back  - Bottom left
+	primMesh.AddVertex(Primitive::Vertex({ 0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f })); // Back -  Top left
 
-	prim.SetColour(glm::vec3(0.0f, 1.0f, 0.0f));
-	prim.indices = {
+	primMesh.SetColour(glm::vec3(0.0f, 1.0f, 0.0f));
+	primMesh.indices = {
 		0, 1, 3, // first triangle
 		1, 2, 3,  // second triangle
 
@@ -234,8 +265,21 @@ int main(int argc, char* argv[])
 		21, 22, 23
 	};
 
-	prim.Construct();
+	primMesh.Construct();
 	std::vector<glm::vec3> positions = { glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(2.0f, -1.0f, -.5f), glm::vec3(-2.0f, 1.5f, -2.0f) };
+
+
+	// ===================================== SCENE OBJECTS ============================================
+
+	StaticMeshObject boxMeshObject;
+	boxMeshObject.staticMeshComponent = StaticMeshComponent(&boxMesh);
+	boxMeshObject.Construct();
+	boxMeshObject.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
+
+	StaticMeshObject sphereMeshObject;
+	sphereMeshObject.staticMeshComponent = StaticMeshComponent(&sphereMesh);
+	sphereMeshObject.Construct();
+	sphereMeshObject.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
 
 	// ===================================== MAIN THREAD ============================================
@@ -253,14 +297,6 @@ int main(int argc, char* argv[])
 
 		// Camera controls
 		camera.Update(deltaTime);
-
-
-		if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_0) == GLFW_PRESS)
-			box.transform.position += Transform::WORLD_RIGHT * (float)deltaTime * 1.5f;
-		else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_9) == GLFW_PRESS)
-			box.transform.position -= Transform::WORLD_RIGHT * (float)deltaTime * 1.5f;
-
-
 		EditorInput(deltaTime);
 
 
@@ -269,23 +305,11 @@ int main(int argc, char* argv[])
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear screen & depth buffers with bitwise operation on flags
 
 
-		// Bind textures
-		/*glActiveTexture(GL_TEXTURE0);
-		tex.Bind();
-		glActiveTexture(GL_TEXTURE1);
-		tex2.Bind();*/
-
-		//glBindTexture(GL_TEXTURE_2D, 1);
-		//tex.Bind(); // Bind our texture
-		//tex2.Bind();
-
-
-		// Bind shader program
-		//shaderProgram.Bind();
-		//shaderProgram.SetFloat("ElapsedTime", elapsedTime); // Move me into shader callback
-		//camera.Draw();
-
 		//Draw meshes
+		boxMeshObject.Draw();
+		sphereMeshObject.Draw();
+
+		/*
 		box.Draw();
 		sphere.Draw();
 		plane.Draw();
@@ -296,7 +320,7 @@ int main(int argc, char* argv[])
 			glm::mat4 transform = glm::mat4(1.0f); // Identity
 			transform = glm::translate(transform, positions[i]);
 			prim.Draw(prim.transform.GetMatrix() * transform);
-		}
+		}*/
 
 
 		// Check events to call & swap buffers
@@ -311,10 +335,6 @@ int main(int argc, char* argv[])
 
 
 	// ===================================== CLEAN-UP ============================================
-
-	box.Destroy();
-	prim.Destroy();
-	plane.Destroy();
 
 	Shader::Cleanup();
 	Primitive::Cleanup();

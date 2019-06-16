@@ -48,7 +48,7 @@ protected:
 
 public:
 	// Properties
-	Transform transform;
+	//Transform transform;
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
 	Material* material; // We will change this to be stored in mesh sections
@@ -67,7 +67,7 @@ public:
 	// Methods
 	void Construct();
 	void Draw(const glm::mat4& Transform);
-	void Draw();
+	//void Draw();
 	void Destroy();
 	void WeldAllVertices();
 	void WeldVertices(const std::vector<int>& Indices);

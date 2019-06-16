@@ -9,9 +9,41 @@ Transform::Transform()
 {
 }
 
+Transform::Transform(const glm::mat4 & Matrix)
+{
+	ConstructFromMatrix(Matrix);
+}
+
 
 Transform::~Transform()
 {
+}
+
+void Transform::ConstructFromMatrix(const glm::mat4 & Matrix)
+{
+	glm::vec3 skew;
+	glm::vec4 perspective;
+	glm::decompose(Matrix, scale, rotation, position, skew, perspective);
+}
+
+void Transform::CombineTransform(const Transform & NewTransform)
+{
+	glm::mat4 a = GetMatrix();
+	glm::mat4 b = NewTransform.GetMatrix();
+	glm::mat4 result = a * b;
+
+	ConstructFromMatrix(a);
+}
+
+Transform Transform::operator*(const Transform & NewTransform)
+{
+	*this *= NewTransform;
+	return *this;
+}
+
+void Transform::operator*=(const Transform & NewTransform)
+{
+	CombineTransform(NewTransform);
 }
 
 glm::vec3 Transform::GetForward() const

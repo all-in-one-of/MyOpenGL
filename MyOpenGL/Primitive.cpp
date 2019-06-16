@@ -134,10 +134,10 @@ void Primitive::Draw(const glm::mat4& Transform)
 	}
 }
 
-void Primitive::Draw()
+/*void Primitive::Draw()
 {
 	Draw(transform.GetMatrix());
-}
+}*/
 
 void Primitive::Destroy()
 {

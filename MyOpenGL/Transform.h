@@ -12,6 +12,7 @@
 class Transform
 {
 public:
+
 	// Constants
 	static const glm::vec3 WORLD_FORWARD;// = glm::vec3(0.0, 0.0, 1.0f);
 	static const glm::vec3 WORLD_RIGHT;// = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -23,8 +24,21 @@ public:
 	glm::highp_quat rotation;
 	glm::vec3 scale = glm::vec3(1.0f);
 
+
+	// Constructors & destructors
 	Transform();
+	Transform(const glm::mat4& Matrix);
 	~Transform();
+
+	// Methods
+	void ConstructFromMatrix(const glm::mat4& Matrix);
+	void CombineTransform(const Transform& NewTransform);
+
+	
+	// Operator overloads
+	Transform operator* (const Transform& NewTransform);
+	void operator*= (const Transform& NewTransform);
+
 
 	// Getters
 	glm::vec3 GetForward() const;
